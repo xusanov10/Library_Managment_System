@@ -1,6 +1,6 @@
 ﻿using Libray_Managment_System.DtoModels;
 
-namespace Libray_Managment_System.Services.User
+namespace Libray_Managment_System.Services.Users
 {
     public interface IUserService
     {

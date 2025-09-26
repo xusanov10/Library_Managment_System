@@ -1,7 +1,7 @@
 ﻿using Library_Management_System.Services;
 using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.Models;
-using Libray_Managment_System.Services.User;
+using Libray_Managment_System.Services.Users;
 using Microsoft.EntityFrameworkCore;
 
 public class UserService : IUserService

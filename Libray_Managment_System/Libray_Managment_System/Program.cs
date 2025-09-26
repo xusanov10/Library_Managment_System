@@ -1,7 +1,7 @@
 using Library_Management_System.Services;
 using Libray_Managment_System.Models;
 using Libray_Managment_System.Services.Role;
-using Libray_Managment_System.Services.User;
+using Libray_Managment_System.Services.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

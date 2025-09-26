@@ -13,7 +13,7 @@ public partial class Notification
 
     public DateTime? Createdat { get; set; }
 
-    public bool? Isread { get; set; }
+    public bool Isread { get; set; }
 
     public virtual User User { get; set; } = null!;
 }
