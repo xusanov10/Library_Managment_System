@@ -41,6 +41,47 @@ public class BookService : IBookService
             AuthorId = b.Authorid,
             CategoryId = b.Categoryid
         });
+    }
+    // Kitobni yangilash
+    public async Task UpdateBookAsync(BookDTO dto)
+    {
+        var entity = await _bookRepository.GetByIdAsync(dto.Id);
+        if (entity == null)
+        {
+            throw new KeyNotFoundException("Book not found.");
+        }
+        entity.Title = dto.Title;
+        entity.Isbn = dto.ISBN;
+        entity.Authorid = dto.AuthorId;
+        entity.Categoryid = dto.CategoryId;
 
+        await _bookRepository.UpdateAsync(entity);
+    }
+    // Kitobni o‘chirish
+    public async Task DeleteBookAsync(int bookId)
+    {
+        var entity = await _bookRepository.GetByIdAsync(bookId);
+        if (entity == null)
+        {
+            throw new KeyNotFoundException("Book not found.");
+        }
+        await _bookRepository.DeleteAsync(entity);
+    }
+    // Kitobni ID bo‘yicha olish
+    public async Task<BookDTO> GetBookByIdAsync(int bookId)
+    {
+        var entity = await _bookRepository.GetByIdAsync(bookId);
+        if (entity == null)
+        {
+            throw new KeyNotFoundException("Book not found.");
+        }
+        return new BookDTO
+        {
+            Id = entity.Id,
+            Title = entity.Title,
+            ISBN = entity.Isbn,
+            AuthorId = entity.Authorid,
+            CategoryId = entity.Categoryid
+        };
     }
 }

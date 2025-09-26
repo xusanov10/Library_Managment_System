@@ -6,4 +6,7 @@ public interface IBookService
 {
     Task AddBookAsync(BookDTO dto);
     Task<IEnumerable<BookDTO>> GetBooksAsync(FilterDTO filter);
+    Task UpdateBookAsync(BookDTO dto);
+    Task DeleteBookAsync(int bookId);
+    Task<BookDTO> GetBookByIdAsync(int bookId);
 }
