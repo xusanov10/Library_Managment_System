@@ -1,7 +1,5 @@
 ﻿using Libray_Managment_System.DtoModels;
 
-using Libray_Managment_System.DtoModels;
-
 namespace Library_Management_System.Services
 {
     public interface INotificationService

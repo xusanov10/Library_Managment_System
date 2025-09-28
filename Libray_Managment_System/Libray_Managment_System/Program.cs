@@ -1,4 +1,5 @@
 using Library_Management_System.Services;
+using Libray_Managment_System.Data;
 using Libray_Managment_System.Models;
 using Libray_Managment_System.Services.Role;
 using Libray_Managment_System.Services.Users;
@@ -93,7 +94,21 @@ internal class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            try
+            {
+                var context = services.GetRequiredService<LibraryManagmentSystemContext>();
+                var seeder = new PermissionSeeder(context);
+                 seeder.SeedPermissionsAsync();
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "An error occurred seeding the DB.");
+            }
+        }
         app.MapControllers();
 
         app.Run();
