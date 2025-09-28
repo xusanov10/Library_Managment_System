@@ -9,5 +9,6 @@ namespace Libray_Managment_System.Services.Role
         Task<RoleDTO?> GetRoleByIdAsync(int id);
         Task<string> DeleteRoleAsync(int id);
         Task<string> AssignPermissionAsync(RolePermissionDTO dto);
+        Task<string> UpdatePermissionsAsync(int roleId, List<int> permissionIds);
     }
 }

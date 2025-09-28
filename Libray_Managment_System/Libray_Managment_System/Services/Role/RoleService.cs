@@ -93,5 +93,28 @@ namespace Libray_Managment_System.Services.Role
 
             return "Permission assigned to role successfully!";
         }
+        public async Task<string> UpdatePermissionsAsync(int roleId, List<int> permissionIds)
+        {
+            var role = await _context.Roles
+                .Include(r => r.Rolepermissions)
+                .FirstOrDefaultAsync(r => r.Id == roleId);
+
+            if (role == null)
+                return "Role not found!";
+
+            _context.Rolepermissions.RemoveRange(role.Rolepermissions);
+
+            foreach (var pid in permissionIds)
+            {
+                role.Rolepermissions.Add(new Rolepermission
+                {
+                    Roleid = role.Id,
+                    Permissionid = pid
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            return "Permissions updated successfully!";
+        }
     }
 }
