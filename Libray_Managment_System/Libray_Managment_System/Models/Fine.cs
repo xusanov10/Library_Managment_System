@@ -15,7 +15,7 @@ public partial class Fine
 
     public bool? Paid { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? Createdat { get; set; } = DateTime.UtcNow;
 
     public virtual Borrowrecord Borrowrecord { get; set; } = null!;
 

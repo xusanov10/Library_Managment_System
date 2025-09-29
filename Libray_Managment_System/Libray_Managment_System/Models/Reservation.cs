@@ -12,7 +12,7 @@ public partial class Reservation
 
     public int Bookcopyid { get; set; }
 
-    public DateTime? Reserveddate { get; set; }
+    public DateTime? Reserveddate { get; set; } = DateTime.UtcNow;
     public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
     public virtual Bookcopy Bookcopy { get; set; } = null!;
 

@@ -47,9 +47,6 @@ public partial class LibraryManagmentSystemContext : DbContext
 
     public virtual DbSet<Userrole> Userroles { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=LibraryManagmentSystem;Username=postgres;Password=2005");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -88,8 +85,7 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Authorid).HasColumnName("authorid");
             entity.Property(e => e.Categoryid).HasColumnName("categoryid");
             entity.Property(e => e.Createdat)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("createdat");
             entity.Property(e => e.Filepath)
                 .HasMaxLength(255)
@@ -150,18 +146,17 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Bookcopyid).HasColumnName("bookcopyid");
             entity.Property(e => e.Status).HasColumnType("borrowstatus");
             entity.Property(e => e.Borrowdate)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("borrowdate");
             entity.Property(e => e.Duedate)
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("duedate");
             entity.Property(e => e.Penalty)
                 .HasPrecision(10, 2)
                 .HasDefaultValueSql("0")
                 .HasColumnName("penalty");
             entity.Property(e => e.Returndate)
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("returndate");
             entity.Property(e => e.Userid).HasColumnName("userid");
 
@@ -205,8 +200,7 @@ public partial class LibraryManagmentSystemContext : DbContext
                 .HasColumnName("amount");
             entity.Property(e => e.Borrowrecordid).HasColumnName("borrowrecordid");
             entity.Property(e => e.Createdat)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("createdat");
             entity.Property(e => e.Paid)
                 .HasDefaultValue(false)
@@ -232,8 +226,7 @@ public partial class LibraryManagmentSystemContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Createdat)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("createdat");
             entity.Property(e => e.Isread)
                 .HasDefaultValue(false)
@@ -264,8 +257,7 @@ public partial class LibraryManagmentSystemContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("method");
             entity.Property(e => e.Paymentdate)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("paymentdate");
             entity.Property(e => e.Userid).HasColumnName("userid");
 
@@ -327,8 +319,7 @@ public partial class LibraryManagmentSystemContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("filepath");
             entity.Property(e => e.Generatedat)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("generatedat");
             entity.Property(e => e.Generatedby).HasColumnName("generatedby");
             entity.Property(e => e.Title)
@@ -351,8 +342,7 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Bookcopyid).HasColumnName("bookcopyid");
             entity.Property(e => e.Status).HasColumnType("reservationstatus");
             entity.Property(e => e.Reserveddate)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("reserveddate");
             entity.Property(e => e.Userid).HasColumnName("userid");
 
@@ -415,8 +405,7 @@ public partial class LibraryManagmentSystemContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Createdat)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone")
+                .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("createdat");
             entity.Property(e => e.Email)
                 .HasMaxLength(150)

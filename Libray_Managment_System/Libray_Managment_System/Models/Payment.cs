@@ -13,7 +13,7 @@ public partial class Payment
 
     public decimal Amount { get; set; }
 
-    public DateTime? Paymentdate { get; set; }
+    public DateTime? Paymentdate { get; set; } = DateTime.UtcNow; 
 
     public string? Method { get; set; }
 
