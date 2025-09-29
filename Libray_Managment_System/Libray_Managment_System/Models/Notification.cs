@@ -11,7 +11,7 @@ public partial class Notification
 
     public string? Message { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? Createdat { get; set; } = DateTime.UtcNow; 
 
     public bool Isread { get; set; }
 

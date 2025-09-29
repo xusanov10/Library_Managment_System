@@ -12,7 +12,7 @@ public partial class Report
 
     public int Generatedby { get; set; }
 
-    public DateTime? Generatedat { get; set; }
+    public DateTime? Generatedat { get; set; } = DateTime.UtcNow;
     public ReportType Reporttype { get; set; } = ReportType.Daily;
     public string? Filepath { get; set; }
 

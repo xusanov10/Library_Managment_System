@@ -3,6 +3,7 @@ using System;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Libray_Managment_System.Migrations
 {
     [DbContext(typeof(LibraryManagmentSystemContext))]
-    partial class LibraryManagmentSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20250928171157_ChangedDateTime")]
+    partial class ChangedDateTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,9 +82,9 @@ namespace Libray_Managment_System.Migrations
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Filepath")
                         .HasMaxLength(255)
@@ -171,15 +174,13 @@ namespace Libray_Managment_System.Migrations
 
                     b.Property<DateTime?>("Borrowdate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("borrowdate")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<DateTime>("Duedate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("duedate")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("duedate");
 
                     b.Property<decimal?>("Penalty")
                         .ValueGeneratedOnAdd()
@@ -189,10 +190,8 @@ namespace Libray_Managment_System.Migrations
                         .HasDefaultValueSql("0");
 
                     b.Property<DateTime?>("Returndate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("returndate")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("returndate");
 
                     b.Property<int>("Status")
                         .HasColumnType("borrowstatus");
@@ -260,9 +259,9 @@ namespace Libray_Managment_System.Migrations
 
                     b.Property<DateTime?>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<bool?>("Paid")
                         .ValueGeneratedOnAdd()
@@ -295,9 +294,9 @@ namespace Libray_Managment_System.Migrations
 
                     b.Property<DateTime?>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<bool>("Isread")
                         .ValueGeneratedOnAdd()
@@ -347,9 +346,9 @@ namespace Libray_Managment_System.Migrations
 
                     b.Property<DateTime?>("Paymentdate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("paymentdate")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Userid")
                         .HasColumnType("integer")
@@ -441,9 +440,9 @@ namespace Libray_Managment_System.Migrations
 
                     b.Property<DateTime?>("Generatedat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("generatedat")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Generatedby")
                         .HasColumnType("integer")
@@ -480,9 +479,9 @@ namespace Libray_Managment_System.Migrations
 
                     b.Property<DateTime?>("Reserveddate")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("reserveddate")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<int>("Status")
                         .HasColumnType("reservationstatus");
@@ -568,9 +567,9 @@ namespace Libray_Managment_System.Migrations
 
                     b.Property<DateTime>("Createdat")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("timestamp with time zone")
+                        .HasColumnType("timestamp without time zone")
                         .HasColumnName("createdat")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'");
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<string>("Email")
                         .IsRequired()

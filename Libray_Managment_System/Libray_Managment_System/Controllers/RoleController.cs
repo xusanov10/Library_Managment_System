@@ -17,7 +17,7 @@ namespace Libray_Managment_System.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRole(RoleDTO dto)
+        public async Task<IActionResult> CreateRole([FromQuery]RoleDTO dto)
         {
             var result = await _roleService.CreateRoleAsync(dto);
             return Ok(result);
@@ -48,7 +48,7 @@ namespace Libray_Managment_System.Controllers
         }
 
         [HttpPost("assign-permission")]
-        public async Task<IActionResult> AssignPermission(RolePermissionDTO dto)
+        public async Task<IActionResult> AssignPermission([FromQuery]RolePermissionDTO dto)
         {
             var result = await _roleService.AssignPermissionAsync(dto);
             return Ok(result);

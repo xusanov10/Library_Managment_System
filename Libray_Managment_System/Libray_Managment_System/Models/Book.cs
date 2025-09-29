@@ -23,7 +23,7 @@ public partial class Book
 
     public string? Publishedyear { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime Createdat { get; set; } = DateTime.UtcNow; 
 
     public virtual Author Author { get; set; } = null!;
 

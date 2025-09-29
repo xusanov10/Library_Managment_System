@@ -12,9 +12,9 @@ public partial class Borrowrecord
 
     public int Bookcopyid { get; set; }
 
-    public DateTime? Borrowdate { get; set; }
+    public DateTime? Borrowdate { get; set; } = DateTime.UtcNow;
 
-    public DateTime Duedate { get; set; }
+    public DateTime Duedate { get; set; } = DateTime.UtcNow.AddDays(14);
 
     public DateTime? Returndate { get; set; }
     public BorrowStatus Status { get; set; } = BorrowStatus.Borrowed;

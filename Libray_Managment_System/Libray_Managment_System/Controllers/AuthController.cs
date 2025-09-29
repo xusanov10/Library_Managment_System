@@ -16,14 +16,14 @@ namespace Libray_Managment_System.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDTO dto)
+        public async Task<IActionResult> Register([FromQuery] RegisterDTO dto)
         {
             var result = await _authService.RegisterUserAsync(dto);
             return Ok(result);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDTO dto)
+        public async Task<IActionResult> Login([FromQuery] LoginDTO dto)
         {
             var token = await _authService.LoginUserAsync(dto);
             if (string.IsNullOrEmpty(token))

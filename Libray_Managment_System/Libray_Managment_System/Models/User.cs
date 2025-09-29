@@ -15,7 +15,7 @@ public partial class User
 
     public bool? Status { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime Createdat { get; set; } = DateTime.UtcNow;
 
     public virtual ICollection<Borrowrecord> Borrowrecords { get; set; } = new List<Borrowrecord>();
 
