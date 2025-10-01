@@ -38,7 +38,20 @@ namespace Libray_Managment_System.Services.Auth
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return "User registered successfully!";
+            var studentRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Student");
+            if (studentRole != null)
+            {
+                var userRole = new Userrole
+                {
+                    Userid = user.Id,
+                    Roleid = studentRole.Id
+                };
+                await _context.Userroles.AddAsync(userRole);
+                await _context.SaveChangesAsync();
+            }
+
+            return "User created with default Student role!";
+
         }
 
         public async Task<string?> LoginUserAsync(LoginDTO dto)
