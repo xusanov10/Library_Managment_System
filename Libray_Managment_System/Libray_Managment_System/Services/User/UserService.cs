@@ -8,21 +8,28 @@ using Microsoft.EntityFrameworkCore;
 public class UserService : IUserService
 {
     private readonly LibraryManagmentSystemContext _context;
-    private readonly TokenService _tokenService;
     public UserService(LibraryManagmentSystemContext context)
     {
         _context = context;
     }
 
-    public async Task<string> CreateUserProfileAsync(CreateUserProfileDTO dto)
+    public async Task<ResultDTO> CreateUserProfileAsync(CreateUserProfileDTO dto)
     {
-        var user = await _context.Users.FindAsync(dto.UserId);
-        if (user == null)
-            return "User not found!";
+        var user = await _context.Users.AnyAsync(x => x.Id == 2);
+        if (user)
+            return new ResultDTO
+            {
+                Message = "User not found!",
+                StatusCode = 404,
+            };
 
         var existingProfile = await _context.Userprofiles.FindAsync(dto.UserId);
         if (existingProfile != null)
-            return "User already has a profile!";
+            return new ResultDTO
+            {
+                Message = "User profile already exists!",
+                StatusCode = 404,
+            };
 
         var profile = new Userprofile
         {
@@ -36,13 +43,17 @@ public class UserService : IUserService
         await _context.Userprofiles.AddAsync(profile);
         await _context.SaveChangesAsync();
 
-        return "User profile created successfully!";
+        return  new ResultDTO
+        {
+            Message = "User profile created successfully!",
+            StatusCode = 201,
+        };  
     }
 
     // Barcha foydalanuvchilarni olish
-    public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
+    public async Task<ResultDTO<IEnumerable<UserDTO>>> GetAllUsersAsync()
     {
-        return await _context.Users
+        var result = await _context.Users
             .Select(u => new UserDTO
             {
                 Id = u.Id,
@@ -51,29 +62,47 @@ public class UserService : IUserService
                 Status = u.Status
             })
             .ToListAsync();
+        return new ResultDTO<IEnumerable<UserDTO>>
+        {
+            Data = result,
+            Message = "Users retrieved successfully!",
+            StatusCode = 200,
+        };
     }
 
     // Foydalanuvchini ID orqali olish
-    public async Task<UserDTO?> GetUserByIdAsync(int id)
+    public async Task<ResultDTO<UserDTO?>> GetUserByIdAsync(int id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null) return null;
 
-        return new UserDTO
+        return new ResultDTO<UserDTO?>
         {
-            Id = user.Id,
-            Fullname = user.Fullname,
+            Data = new UserDTO
+            {
+                Id = user.Id,
+                Fullname = user.Fullname,
+                Email = user.Email,
+                Status = user.Status
+            },
+            Message = "User retrieved successfully!",
+            StatusCode = 200,
         };
     }
 
     // Role biriktirish
-    public async Task<bool> AssignRoleAsync(UserRoleDTO dto)
+    public async Task<ResultDTO<bool>> AssignRoleAsync(UserRoleDTO dto)
     {
         var user = await _context.Users.FindAsync(dto.UserId);
         var role = await _context.Roles.FindAsync(dto.RoleId);
 
         if (user == null || role == null)
-            return false;
+            return new ResultDTO<bool>
+            {
+                Data = false,
+                Message = "User or Role not found!",
+                StatusCode = 404,
+            };
 
         var userRole = new Userrole
         {
@@ -84,13 +113,22 @@ public class UserService : IUserService
         await _context.Userroles.AddAsync(userRole);
         await _context.SaveChangesAsync();
 
-        return true;
+        return new ResultDTO<bool>
+        {
+            Data = true,
+            Message = "Role assigned successfully!",
+            StatusCode = 200,
+        };
     }
 
-    public Task<string> UpdateUserProfileAsync(int id, UserProfileDTO dto)
+    public async Task<ResultDTO> UpdateUserProfileAsync(int id, UserProfileDTO dto)
     {
-        var user = _context.Userprofiles.AnyAsync(a => a.Id == id);
-        if(user == null) return Task.FromResult("User not found");
+        var user = await _context.Userprofiles.AnyAsync(a => a.Id == id);
+        if (user) return new ResultDTO
+        {
+            Message = "User profile not found",
+            StatusCode = 404
+        };
         var updateUser = new Userprofile
         {
             Phonenumber = dto.Phonenumber,
@@ -99,15 +137,74 @@ public class UserService : IUserService
         };
         _context.Userprofiles.Update(updateUser);
         _context.SaveChanges();
-        return Task.FromResult("User profile updated successfully");
+        return new ResultDTO
+        {
+            Message = "User profile updated successfully",
+            StatusCode = 200
+        };
     }
 
-    public Task<string> DeleteUserAsync(int id)
+    public async Task<ResultDTO> DeleteUserAsync(int id)
     {
-        var user = _context.Users.FindAsync(id);
-        if (user == null) return Task.FromResult("User not found");
-        _context.Users.Remove(user.Result);
-        _context.SaveChanges();
-        return Task.FromResult("User deleted successfully");
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return new ResultDTO
+        {
+            Message = "User not found",
+            StatusCode = 404
+        };
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+        return new ResultDTO
+        {
+            Message = "User deleted successfully!",
+            StatusCode = 200
+        };
+    }
+
+    public async Task<ResultDTO> UpdateUserAsync(int id, UpdateUserDTO dto)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+            return new ResultDTO
+            {
+                Message = "User not found!",
+                StatusCode = 404,
+            };
+
+        if (!string.IsNullOrWhiteSpace(dto.FullName))
+            user.Fullname = dto.FullName;
+
+        if (!string.IsNullOrWhiteSpace(dto.Email))
+            user.Email = dto.Email;
+
+        if (dto.Status.HasValue)
+            user.Status = dto.Status;
+
+        await _context.SaveChangesAsync();
+        return new ResultDTO
+        {
+            Message = "User updated successfully!",
+            StatusCode = 200,
+        };
+    }
+    public async Task<ResultDTO<IEnumerable<UserDTO>>> GetUsersByRoleAsync(string roleName)
+    {
+        var users = await _context.Users
+            .Where(u => u.Userroles.Any(ur => ur.Role.Name == roleName))
+            .Select(u => new UserDTO
+            {
+                Id = u.Id,
+                Fullname = u.Fullname,
+                Email = u.Email,
+                Status = u.Status
+            })
+            .ToListAsync();
+
+        return new ResultDTO<IEnumerable<UserDTO>>
+        {
+            Data = users,
+            Message = "Users with the specified role retrieved successfully!",
+            StatusCode = 200,
+        };
     }
 }

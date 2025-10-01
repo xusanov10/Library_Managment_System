@@ -468,6 +468,12 @@ public partial class LibraryManagmentSystemContext : DbContext
                 .HasConstraintName("userroles_userid_fkey");
         });
 
+        modelBuilder.Entity<Role>().HasData(
+            new Role { Id = 1, Name = "Student", Description = "Default role for students" },
+            new Role { Id = 2, Name = "Moderator", Description = "Moderator role with limited management rights" },
+            new Role { Id = 3, Name = "Admin", Description = "Administrator role with full permissions" }
+        );
+
         OnModelCreatingPartial(modelBuilder);
     }
 

@@ -19,50 +19,37 @@ namespace Libray_Managment_System.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRole([FromQuery]RoleDTO dto)
         {
-            var result = await _roleService.CreateRoleAsync(dto);
-            return Ok(result);
+           return await _roleService.CreateRoleAsync(dto);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllRoles()
         {
-            var roles = await _roleService.GetAllRolesAsync();
-            return Ok(roles);
+           return await _roleService.GetAllRolesAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRoleById(int id)
         {
-            var role = await _roleService.GetRoleByIdAsync(id);
-            if (role == null)
-                return NotFound("Role not found");
-
-            return Ok(role);
+           return await _roleService.GetRoleByIdAsync(id);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(int id)
         {
-            var result = await _roleService.DeleteRoleAsync(id);
-            return Ok(result);
+           return await _roleService.DeleteRoleAsync(id);
         }
 
         [HttpPost("assign-permission")]
         public async Task<IActionResult> AssignPermission([FromQuery]RolePermissionDTO dto)
         {
-            var result = await _roleService.AssignPermissionAsync(dto);
-            return Ok(result);
+            return await _roleService.AssignPermissionAsync(dto);
         }
 
         [HttpPut("{id}/permissions")]
         public async Task<IActionResult> UpdateRolePermissions(int id, List<int> permissionIds)
         {
-            var result = await _roleService.UpdatePermissionsAsync(id, permissionIds);
-
-            if (result.Contains("not found"))
-                return NotFound(result);
-
-            return Ok(result);
+           return await _roleService.UpdatePermissionsAsync(id, permissionIds);
         }
     }
 }

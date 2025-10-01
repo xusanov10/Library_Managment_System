@@ -1,4 +1,5 @@
 ﻿using Libray_Managment_System.DtoModels;
+using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,11 +14,15 @@ namespace Libray_Managment_System.Services.Role
             _context = context;
         }
 
-        public async Task<string> CreateRoleAsync(RoleDTO dto)
+        public async Task<ResultDTO> CreateRoleAsync(RoleDTO dto)
         {
             var exists = await _context.Roles.AnyAsync(r => r.Name == dto.Name);
             if (exists)
-                return "Role already exists!";
+                return new ResultDTO
+                {
+                    Message = "Role already exists!",
+                    StatusCode = 400,
+                };
 
             var role = new Models.Role
             {
@@ -28,12 +33,16 @@ namespace Libray_Managment_System.Services.Role
             await _context.Roles.AddAsync(role);
             await _context.SaveChangesAsync();
 
-            return "Role created successfully!";
+            return new ResultDTO
+            {
+                Message = "Role created successfully!",
+                StatusCode = 201,
+            };
         }
 
-        public async Task<IEnumerable<RoleDTO>> GetAllRolesAsync()
+        public async Task<ResultDTO<IEnumerable<RoleDTO>>> GetAllRolesAsync()
         {
-            return await _context.Roles
+            var role = await _context.Roles
                 .Select(r => new RoleDTO
                 {
                     Id = r.Id,
@@ -41,46 +50,79 @@ namespace Libray_Managment_System.Services.Role
                     Description = r.Description
                 })
                 .ToListAsync();
-        }
 
-        public async Task<RoleDTO?> GetRoleByIdAsync(int id)
-        {
-            var role = await _context.Roles.FindAsync(id);
-            if (role == null) return null;
-
-            return new RoleDTO
+            return new ResultDTO<IEnumerable<RoleDTO>>
             {
-                Id = role.Id,
-                Name = role.Name,
-                Description = role.Description
+                Data = role,
+                Message = "Roles retrieved successfully!",
+                StatusCode = 200,
             };
         }
 
-        public async Task<string> DeleteRoleAsync(int id)
+        public async Task<ResultDTO<RoleDTO>> GetRoleByIdAsync(int id)
+        {
+            var role = await _context.Roles.FindAsync(id);
+            if (role == null) 
+               return new ResultDTO<RoleDTO>
+               {
+                   Message = "Role not found!",
+                   StatusCode = 404,
+               };
+
+            return new ResultDTO<RoleDTO>
+            {
+                Data = new RoleDTO
+                {
+                    Id = role.Id,
+                    Name = role.Name,
+                    Description = role.Description
+                },
+                Message = "Role retrieved successfully!",
+                StatusCode = 200,
+            };
+        }
+
+        public async Task<ResultDTO> DeleteRoleAsync(int id)
         {
             var role = await _context.Roles.FindAsync(id);
             if (role == null)
-                return "Role not found!";
+                return new ResultDTO
+                {
+                    Message = "Role not found!",
+                    StatusCode = 404,
+                };
 
             _context.Roles.Remove(role);
             await _context.SaveChangesAsync();
 
-            return "Role deleted successfully!";
+            return new ResultDTO
+            {
+                Message = "Role deleted successfully!",
+                StatusCode = 200,
+            };
         }
 
-        public async Task<string> AssignPermissionAsync(RolePermissionDTO dto)
+        public async Task<ResultDTO> AssignPermissionAsync(RolePermissionDTO dto)
         {
             var roleExists = await _context.Roles.AnyAsync(r => r.Id == dto.Roleid);
             var permExists = await _context.Permissions.AnyAsync(p => p.Id == dto.Permissionid);
 
             if (!roleExists || !permExists)
-                return "Role or Permission not found!";
+                return new ResultDTO
+                {
+                    Message = "Role or Permission not found!",
+                    StatusCode = 404,
+                };
 
             var alreadyAssigned = await _context.Rolepermissions
                 .AnyAsync(rp => rp.Roleid == dto.Roleid && rp.Permissionid == dto.Permissionid);
 
             if (alreadyAssigned)
-                return "Permission already assigned to this role!";
+                return new ResultDTO
+                {
+                    Message = "Permission already assigned to role!",
+                    StatusCode = 400,
+                };
 
             var rolePermission = new Rolepermission
             {
@@ -91,16 +133,24 @@ namespace Libray_Managment_System.Services.Role
             await _context.Rolepermissions.AddAsync(rolePermission);
             await _context.SaveChangesAsync();
 
-            return "Permission assigned to role successfully!";
+            return new ResultDTO
+            {
+                Message = "Permission assigned to role successfully!",
+                StatusCode = 201,
+            };
         }
-        public async Task<string> UpdatePermissionsAsync(int roleId, List<int> permissionIds)
+        public async Task<ResultDTO> UpdatePermissionsAsync(int roleId, List<int> permissionIds)
         {
             var role = await _context.Roles
                 .Include(r => r.Rolepermissions)
                 .FirstOrDefaultAsync(r => r.Id == roleId);
 
             if (role == null)
-                return "Role not found!";
+                return new ResultDTO
+                {
+                    Message = "Role not found!",
+                    StatusCode = 404,
+                };
 
             _context.Rolepermissions.RemoveRange(role.Rolepermissions);
 
@@ -114,7 +164,11 @@ namespace Libray_Managment_System.Services.Role
             }
 
             await _context.SaveChangesAsync();
-            return "Permissions updated successfully!";
+            return new ResultDTO
+            {
+                Message = "Role permissions updated successfully!",
+                StatusCode = 200,
+            };
         }
     }
 }
