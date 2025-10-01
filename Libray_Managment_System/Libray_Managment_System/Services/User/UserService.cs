@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 public class UserService : IUserService
 {
     private readonly LibraryManagmentSystemContext _context;
-    private readonly TokenService _tokenService;
     public UserService(LibraryManagmentSystemContext context)
     {
         _context = context;
@@ -110,4 +109,39 @@ public class UserService : IUserService
         _context.SaveChanges();
         return Task.FromResult("User deleted successfully");
     }
+
+    public async Task<string> UpdateUserAsync(int id, UpdateUserDTO dto)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+            return "User not found!";
+
+        if (!string.IsNullOrWhiteSpace(dto.FullName))
+            user.Fullname = dto.FullName;
+
+        if (!string.IsNullOrWhiteSpace(dto.Email))
+            user.Email = dto.Email;
+
+        if (dto.Status.HasValue)
+            user.Status = dto.Status;
+
+        await _context.SaveChangesAsync();
+        return "User updated successfully!";
+    }
+     public async Task<IEnumerable<UserDTO>> GetUsersByRoleAsync(string roleName)
+    {
+        var users = await _context.Users
+            .Where(u => u.Userroles.Any(ur => ur.Role.Name == roleName))
+            .Select(u => new UserDTO
+            {
+                Id = u.Id,
+                Fullname = u.Fullname,
+                Email = u.Email,
+                Status = u.Status
+            })
+            .ToListAsync();
+
+        return users;
+    }
+
 }

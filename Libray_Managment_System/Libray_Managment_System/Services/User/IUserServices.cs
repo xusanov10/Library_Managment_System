@@ -9,6 +9,8 @@ namespace Libray_Managment_System.Services.Users
         Task<IEnumerable<UserDTO>> GetAllUsersAsync();
         Task<string> DeleteUserAsync(int id);
         Task<bool> AssignRoleAsync(UserRoleDTO dto);
+        Task<string> UpdateUserAsync(int id, UpdateUserDTO dto);
+        Task<IEnumerable<UserDTO>> GetUsersByRoleAsync(string roleName);
         Task<string> UpdateUserProfileAsync(int id, UserProfileDTO dto);
         Task<string> CreateUserProfileAsync(CreateUserProfileDTO dto);
     }
