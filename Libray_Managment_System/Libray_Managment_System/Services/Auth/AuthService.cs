@@ -70,6 +70,7 @@ namespace Libray_Managment_System.Services.Auth
                     Message = "Invalid email or password!",
                     StatusCode = 401,
                     Data = "error"
+
                 };
             var token = _tokenService.GenerateToken(user);
             return new ResultDTO<string>
