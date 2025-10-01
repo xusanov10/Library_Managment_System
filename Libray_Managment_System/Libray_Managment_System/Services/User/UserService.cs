@@ -1,5 +1,6 @@
 ﻿using Library_Management_System.Services;
 using Libray_Managment_System.DtoModels;
+using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
 using Libray_Managment_System.Services.Users;
 using Microsoft.EntityFrameworkCore;
@@ -13,38 +14,29 @@ public class UserService : IUserService
         _context = context;
     }
 
-    // Foydalanuvchini ro‘yxatdan o‘tkazish
-    public async Task<string> RegisterUserAsync(RegisterDTO dto)
+    public async Task<string> CreateUserProfileAsync(CreateUserProfileDTO dto)
     {
-        var exists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
-        if (exists)
-            return "User already exists!";
+        var user = await _context.Users.FindAsync(dto.UserId);
+        if (user == null)
+            return "User not found!";
 
-        var user = new User
-            {
-            Fullname = dto.FullName,
-            Email = dto.Email,
-            Passwordhash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Status = true,
-            Createdat = DateTime.UtcNow
+        var existingProfile = await _context.Userprofiles.FindAsync(dto.UserId);
+        if (existingProfile != null)
+            return "User already has a profile!";
+
+        var profile = new Userprofile
+        {
+            Id = dto.UserId,
+            Phonenumber = dto.PhoneNumber,
+            Address = dto.Address,
+            Birthdate = dto.BirthDate,
+            Gender = dto.Gender
         };
 
-        await _context.Users.AddAsync(user);
+        await _context.Userprofiles.AddAsync(profile);
         await _context.SaveChangesAsync();
 
-        return "User registered successfully!";
-    }
-
-    // Login
-    public async Task<string?> LoginUserAsync(LoginDTO dto)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-        if (user == null) return null;
-
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Passwordhash);
-        if (!isPasswordValid) return null;
-
-        return _tokenService.GenerateToken(user);
+        return "User profile created successfully!";
     }
 
     // Barcha foydalanuvchilarni olish
@@ -93,5 +85,29 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
 
         return true;
+    }
+
+    public Task<string> UpdateUserProfileAsync(int id, UserProfileDTO dto)
+    {
+        var user = _context.Userprofiles.AnyAsync(a => a.Id == id);
+        if(user == null) return Task.FromResult("User not found");
+        var updateUser = new Userprofile
+        {
+            Phonenumber = dto.Phonenumber,
+            Address = dto.Address,
+            Birthdate = dto.Birthdate
+        };
+        _context.Userprofiles.Update(updateUser);
+        _context.SaveChanges();
+        return Task.FromResult("User profile updated successfully");
+    }
+
+    public Task<string> DeleteUserAsync(int id)
+    {
+        var user = _context.Users.FindAsync(id);
+        if (user == null) return Task.FromResult("User not found");
+        _context.Users.Remove(user.Result);
+        _context.SaveChanges();
+        return Task.FromResult("User deleted successfully");
     }
 }
