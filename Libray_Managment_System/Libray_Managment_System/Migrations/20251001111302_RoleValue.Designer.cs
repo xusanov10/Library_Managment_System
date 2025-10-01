@@ -3,6 +3,7 @@ using System;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Libray_Managment_System.Migrations
 {
     [DbContext(typeof(LibraryManagmentSystemContext))]
-    partial class LibraryManagmentSystemContextModelSnapshot : ModelSnapshot
+    [Migration("20251001111302_RoleValue")]
+    partial class RoleValue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

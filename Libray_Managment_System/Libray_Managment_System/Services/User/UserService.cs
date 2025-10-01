@@ -89,7 +89,7 @@ public class UserService : IUserService
     public Task<string> UpdateUserProfileAsync(int id, UserProfileDTO dto)
     {
         var user = _context.Userprofiles.AnyAsync(a => a.Id == id);
-        if(user == null) return Task.FromResult("User not found");
+        if (user == null) return Task.FromResult("User not found");
         var updateUser = new Userprofile
         {
             Phonenumber = dto.Phonenumber,
@@ -128,7 +128,7 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
         return "User updated successfully!";
     }
-     public async Task<IEnumerable<UserDTO>> GetUsersByRoleAsync(string roleName)
+    public async Task<IEnumerable<UserDTO>> GetUsersByRoleAsync(string roleName)
     {
         var users = await _context.Users
             .Where(u => u.Userroles.Any(ur => ur.Role.Name == roleName))
@@ -143,5 +143,4 @@ public class UserService : IUserService
 
         return users;
     }
-
 }
