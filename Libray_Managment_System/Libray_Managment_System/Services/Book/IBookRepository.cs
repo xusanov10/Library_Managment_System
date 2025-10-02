@@ -9,5 +9,4 @@ public interface IBookRepository
     Task<Models.Book> GetByIdAsync(int id);
     Task UpdateAsync(Models.Book entity);
     Task DeleteAsync(Models.Book entity);
-    Task<Models.Book> GetByIdAsync(Models.Book entity);
 }

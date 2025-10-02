@@ -1,11 +1,13 @@
 using Library_Management_System.Services;
 using Libray_Managment_System.Models;
+using Libray_Managment_System.Services.AuthorService;
 using Libray_Managment_System.Services.Role;
 using Libray_Managment_System.Services.User;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Text;
 
 internal class Program
@@ -18,6 +20,15 @@ internal class Program
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IRoleService, RoleService>();
+        builder.Services.AddScoped<IAuthorService, AuthorService>();
+        builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+
+
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+        builder.Services.AddDbContext<LibraryManagmentSystemContext>(options =>
+            options.UseNpgsql(connectionString));
+
         //JWT Config
         var jwtConfig = builder.Configuration.GetSection("Jwt");
         var key = Encoding.UTF8.GetBytes(jwtConfig["Key"]);

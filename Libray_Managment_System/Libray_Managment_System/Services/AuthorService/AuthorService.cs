@@ -14,7 +14,10 @@ public class AuthorService : IAuthorService
     {
         var author = new Author
         {
-            Fullname = dto.FullName
+            Fullname = dto.FullName,
+            Birthyear = dto.BirthYear,
+            Country = dto.Country,
+            Deathyear = dto.DeathYear
         };
         return _authorRepository.AddAsync(author);
     }
