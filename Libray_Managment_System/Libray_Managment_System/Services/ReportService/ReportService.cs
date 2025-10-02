@@ -1,51 +1,59 @@
-﻿using Libray_Managment_System.DtoModels;
-using Libray_Managment_System.Enum;
+﻿using AutoMapper;
+using Libray_Managment_System.DtoModels.ReportModels;
+using Libray_Managment_System.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Libray_Managment_System.Services.ReportService;
 
 public class ReportService : IReportService
 {
-    private readonly IReportRepository _reportRepository;
-    public ReportService(IReportRepository reportRepository)
+    private readonly LibraryManagmentSystemContext _context;
+    private readonly IMapper _mapper;
+
+    public ReportService(LibraryManagmentSystemContext context, IMapper mapper)
     {
-        _reportRepository = reportRepository;
+        _context = context;
+        _mapper = mapper;
     }
-    public async Task<ReportDTO> GenerateReportAsync(ReportType type, DateTime? from = null, DateTime? to = null)
+
+    public async Task<IEnumerable<ReportResponseDto>> GetAllAsync()
     {
-        DateTime startDate;
-        DateTime endDate = DateTime.UtcNow;
+        var reports = await _context.Reports.ToListAsync();
+        return _mapper.Map<IEnumerable<ReportResponseDto>>(reports);
+    }
 
-        switch (type)
-        {
-            case ReportType.Daily:
-                startDate = DateTime.UtcNow.Date;
-                break;
-            case ReportType.Monthly:
-                startDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-                break;
-            case ReportType.Yearly:
-                startDate = new DateTime(DateTime.UtcNow.Year, 1, 1);
-                break;
-            case ReportType.Custom:
-                if (from == null || to == null)
-                    throw new ArgumentException("Custom report requires 'from' and 'to' dates.");
-                startDate = from.Value;
-                endDate = to.Value;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type), "Unknown report type.");
-        }
+    public async Task<ReportResponseDto?> GetByIdAsync(int id)
+    {
+        var report = await _context.Reports.FindAsync(id);
+        return report == null ? null : _mapper.Map<ReportResponseDto>(report);
+    }
 
-        var borrowedBooks = await _reportRepository.GetBorrowedBooksAsync(startDate, endDate);
+    public async Task<ReportResponseDto> CreateAsync(ReportCreateDto dto)
+    {
+        var report = _mapper.Map<Report>(dto);
+        report.Generatedat = DateTime.UtcNow;
+        _context.Reports.Add(report);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<ReportResponseDto>(report);
+    }
 
-        string data = $"Davr: {startDate:yyyy-MM-dd} - {endDate:yyyy-MM-dd}, " +
-                      $"Qarzga berilgan kitoblar soni: {borrowedBooks.Count()}";
+    public async Task<ReportResponseDto?> UpdateAsync(int id, ReportUpdateDto dto)
+    {
+        var report = await _context.Reports.FindAsync(id);
+        if (report == null) return null;
 
-        return new ReportDTO
-        {
-            Type = type,
-            GeneratedAt = DateTime.UtcNow,
-            Data = data
-        };
+        _mapper.Map(dto, report);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<ReportResponseDto>(report);
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var report = await _context.Reports.FindAsync(id);
+        if (report == null) return false;
+
+        _context.Reports.Remove(report);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

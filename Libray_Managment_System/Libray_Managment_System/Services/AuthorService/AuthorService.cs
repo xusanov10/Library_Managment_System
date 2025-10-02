@@ -1,66 +1,60 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using AutoMapper;
+using Libray_Managment_System.DtoModels.AuthorModels;
 using Libray_Managment_System.Models;
+using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace Libray_Managment_System.Services.AuthorService;
 
 public class AuthorService : IAuthorService
 {
-    private readonly IAuthorRepository _authorRepository;
-    public AuthorService(IAuthorRepository authorRepository)
+    private readonly LibraryManagmentSystemContext _context;
+    private readonly IMapper _mapper;
+
+    public AuthorService(LibraryManagmentSystemContext context, IMapper mapper)
     {
-        _authorRepository = authorRepository;
-    }
-    public Task AddAuthorAsync(AuthorDTO dto)
-    {
-        var author = new Author
-        {
-            Fullname = dto.FullName,
-            Birthyear = dto.BirthYear,
-            Country = dto.Country,
-            Deathyear = dto.DeathYear
-        };
-        return _authorRepository.AddAsync(author);
+        _context = context;
+        _mapper = mapper;
     }
 
-    public async Task<IEnumerable<AuthorDTO>> GetAuthorsAsync()
+    public async Task<IEnumerable<AuthorResponseDto>> GetAllAsync()
     {
-        var authors = await _authorRepository.GetAllAsync();
-        return authors.Select(a => new AuthorDTO
-        {
-            Id = a.Id,
-            FullName = a.Fullname
-        });
+        var authors = await _context.Authors.ToListAsync();
+        return _mapper.Map<IEnumerable<AuthorResponseDto>>(authors);
     }
-    public async Task DeleteAuthorAsync(AuthorDTO dto)
+
+    public async Task<AuthorResponseDto?> GetByIdAsync(int id)
     {
-        var author = await _authorRepository.GetByIdAsync(dto.Id);
-        if (author == null)
-        {
-            throw new KeyNotFoundException("Author not found.");
-        }
-        await _authorRepository.DeleteAsync(author);
+        var author = await _context.Authors.FindAsync(id);
+        return author == null ? null : _mapper.Map<AuthorResponseDto>(author);
     }
-    public async Task UpdateAuthorAsync(AuthorDTO dto)
+
+    public async Task<AuthorResponseDto> CreateAsync(AuthorCreateDto dto)
     {
-        var author = await _authorRepository.GetByIdAsync(dto.Id);
-        if (author == null)
-        {
-            throw new KeyNotFoundException("Author not found.");
-        }
-        author.Fullname = dto.FullName;
-        await _authorRepository.UpdateAsync(author);
+        var author = _mapper.Map<Author>(dto);
+        _context.Authors.Add(author);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<AuthorResponseDto>(author);
     }
-    public async Task<AuthorDTO> GetAuthorByIdAsync(int authorId)
+
+    public async Task<AuthorResponseDto?> UpdateAsync(int id, AuthorUpdateDto dto)
     {
-        var author = await _authorRepository.GetByIdAsync(authorId);
-        if (author == null)
-        {
-            throw new KeyNotFoundException("Author not found.");
-        }
-        return new AuthorDTO
-        {
-            Id = author.Id,
-            FullName = author.Fullname
-        };
+        var author = await _context.Authors.FindAsync(id);
+        if (author == null) return null;
+
+        _mapper.Map(dto, author);
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<AuthorResponseDto>(author);
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var author = await _context.Authors.FindAsync(id);
+        if (author == null) return false;
+
+        _context.Authors.Remove(author);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

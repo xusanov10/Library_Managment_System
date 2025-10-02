@@ -1,4 +1,4 @@
-﻿namespace Libray_Managment_System.DtoModels
+﻿namespace Libray_Managment_System.DTOs.UserModels
 {
     public class UserDTO
     {

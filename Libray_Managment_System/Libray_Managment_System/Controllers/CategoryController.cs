@@ -1,4 +1,4 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using Libray_Managment_System.DtoModels.CategoryModels;
 using Libray_Managment_System.Services.Category;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,51 +8,41 @@ namespace Libray_Managment_System.Controllers;
 [Route("api/[controller]")]
 public class CategoryController : ControllerBase
 {
-    private readonly ICategoryService _categoryService;
-    public CategoryController(ICategoryService categoryService)
+    private readonly ICategoryService _service;
+
+    public CategoryController(ICategoryService service)
     {
-        _categoryService = categoryService;
+        _service = service;
     }
 
-    [HttpPost("add")]
-    public async Task<IActionResult> AddCategory(CategoryDTO dto)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> GetAll() => Ok(await _service.GetAllAsync());
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<CategoryResponseDto>> GetById(int id)
     {
-        await _categoryService.AddCategoryAsync(dto);
-        return Ok(new { message = "Category Added." });
+        var category = await _service.GetByIdAsync(id);
+        return category == null ? NotFound() : Ok(category);
     }
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAllCategories()
+    [HttpPost]
+    public async Task<ActionResult<CategoryResponseDto>> Create(CategoryCreateDto dto)
     {
-        var categories = await _categoryService.GetCategoriesAsync();
-        return Ok(categories);
+        var created = await _service.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-    [HttpPut("update")]
-    public async Task<IActionResult> UpdateCategory(CategoryDTO dto)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<CategoryResponseDto>> Update(int id, CategoryUpdateDto dto)
     {
-        try
-        {
-            await _categoryService.UpdateCategoryAsync(dto);
-            return Ok(new { message = "Category Updated." });
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var updated = await _service.UpdateAsync(id, dto);
+        return updated == null ? NotFound() : Ok(updated);
     }
 
-    [HttpDelete("delete/{categoryId}")]
-    public async Task<IActionResult> DeleteCategory(int categoryId)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
     {
-        try
-        {
-            await _categoryService.DeleteCategoryAsync(categoryId);
-            return Ok(new { message = "Category Deleted." });
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var deleted = await _service.DeleteAsync(id);
+        return deleted ? NoContent() : NotFound();
     }
 }

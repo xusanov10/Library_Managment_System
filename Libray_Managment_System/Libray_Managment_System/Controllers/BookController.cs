@@ -1,4 +1,4 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using Libray_Managment_System.DTOs.BookModels;
 using Libray_Managment_System.Services.Book;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,56 +14,41 @@ public class BookController : ControllerBase
     {
         _bookService = bookService;
     }
-    [HttpPost("add")]
-    public async Task<IActionResult> AddBook(BookDTO dto)
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<BookResponseDto>>> GetAll()
     {
-        await _bookService.AddBookAsync(dto);
-        return Ok(new { message = "Book Added." });
+        return Ok(await _bookService.GetAllAsync());
     }
 
-    [HttpGet("get all")]
-    public async Task<IActionResult> GetBooks(FilterDTO filter)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<BookResponseDto>> GetById(int id)
     {
-        var books = await _bookService.GetBooksAsync(filter);
-        return Ok(books);
+        var book = await _bookService.GetByIdAsync(id);
+        if (book == null) return NotFound();
+        return Ok(book);
     }
-    [HttpPut("update")]
-    public async Task<IActionResult> UpdateBook(BookDTO dto)
+
+    [HttpPost]
+    public async Task<ActionResult<BookResponseDto>> Create(BookCreateDto dto)
     {
-        try
-        {
-            await _bookService.UpdateBookAsync(dto);
-            return Ok(new { message = "Book Updated." });
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var created = await _bookService.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
-    [HttpDelete("delete/{bookId}")]
-    public async Task<IActionResult> DeleteBook(int bookId)
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<BookResponseDto>> Update(int id, BookUpdateDto dto)
     {
-        try
-        {
-            await _bookService.DeleteBookAsync(bookId);
-            return Ok(new { message = "Book Deleted." });
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var updated = await _bookService.UpdateAsync(id, dto);
+        if (updated == null) return NotFound();
+        return Ok(updated);
     }
-    [HttpGet("{bookId}")]
-    public async Task<IActionResult> GetBookById(int bookId)
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
     {
-        try
-        {
-            var book = await _bookService.GetBookByIdAsync(bookId);
-            return Ok(book);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var deleted = await _bookService.DeleteAsync(id);
+        if (!deleted) return NotFound();
+        return NoContent();
     }
 }

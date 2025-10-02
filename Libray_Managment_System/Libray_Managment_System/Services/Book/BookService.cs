@@ -1,87 +1,60 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Libray_Managment_System.DtoModels;
+﻿using AutoMapper;
+using Libray_Managment_System.DTOs.BookModels;
+using System;
 using Libray_Managment_System.Models;
-using Libray_Managment_System.Services.Book;
+using Microsoft.EntityFrameworkCore;
+
+namespace Libray_Managment_System.Services.Book;
 
 public class BookService : IBookService
 {
-    private readonly IBookRepository _bookRepository;
+    private readonly LibraryManagmentSystemContext _context;
+    private readonly IMapper _mapper;
 
-    public BookService(IBookRepository bookRepository)
+    public BookService(LibraryManagmentSystemContext context, IMapper mapper)
     {
-        _bookRepository = bookRepository;
+        _context = context;
+        _mapper = mapper;
     }
 
-    // Kitob qo‘shish
-    public async Task AddBookAsync(BookDTO dto)
+    public async Task<IEnumerable<BookResponseDto>> GetAllAsync()
     {
-        var entity = new Book
-        {
-            Title = dto.Title,
-            Isbn = dto.ISBN,
-            Authorid = dto.AuthorId,
-            Categoryid = dto.CategoryId
-        };
-
-        await _bookRepository.AddAsync(entity);
+        var books = await _context.Books.ToListAsync();
+        return _mapper.Map<IEnumerable<BookResponseDto>>(books);
     }
 
-    // Kitoblarni filter bilan olish
-    public async Task<IEnumerable<BookDTO>> GetBooksAsync(FilterDTO filter)
+    public async Task<BookResponseDto?> GetByIdAsync(int id)
     {
-        var books = await _bookRepository.GetFilteredAsync(filter);
+        var book = await _context.Books.FindAsync(id);
+        return book == null ? null : _mapper.Map<BookResponseDto>(book);
+    }
 
-        return books.Select(b => new BookDTO
-        {
-            Id = b.Id,
-            Title = b.Title,
-            ISBN = b.Isbn,
-            AuthorId = b.Authorid,
-            CategoryId = b.Categoryid
-        });
-    }
-    // Kitobni yangilash
-    public async Task UpdateBookAsync(BookDTO dto)
+    public async Task<BookResponseDto> CreateAsync(BookCreateDto dto)
     {
-        var entity = await _bookRepository.GetByIdAsync(dto.Id);
-        if (entity == null)
-        {
-            throw new KeyNotFoundException("Book not found.");
-        }
-        entity.Title = dto.Title;
-        entity.Isbn = dto.ISBN;
-        entity.Authorid = dto.AuthorId;
-        entity.Categoryid = dto.CategoryId;
+        var book = _mapper.Map<Models.Book>(dto);
+        _context.Books.Add(book);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<BookResponseDto>(book);
+    }
 
-        await _bookRepository.UpdateAsync(entity);
-    }
-    // Kitobni o‘chirish
-    public async Task DeleteBookAsync(int bookId)
+    public async Task<BookResponseDto?> UpdateAsync(int id, BookUpdateDto dto)
     {
-        var entity = await _bookRepository.GetByIdAsync(bookId);
-        if (entity == null)
-        {
-            throw new KeyNotFoundException("Book not found.");
-        }
-        await _bookRepository.DeleteAsync(entity);
+        var book = await _context.Books.FindAsync(id);
+        if (book == null) return null;
+
+        _mapper.Map(dto, book);
+        await _context.SaveChangesAsync();
+
+        return _mapper.Map<BookResponseDto>(book);
     }
-    // Kitobni ID bo‘yicha olish
-    public async Task<BookDTO> GetBookByIdAsync(int bookId)
+
+    public async Task<bool> DeleteAsync(int id)
     {
-        var entity = await _bookRepository.GetByIdAsync(bookId);
-        if (entity == null)
-        {
-            throw new KeyNotFoundException("Book not found.");
-        }
-        return new BookDTO
-        {
-            Id = entity.Id,
-            Title = entity.Title,
-            ISBN = entity.Isbn,
-            AuthorId = entity.Authorid,
-            CategoryId = entity.Categoryid
-        };
+        var book = await _context.Books.FindAsync(id);
+        if (book == null) return false;
+
+        _context.Books.Remove(book);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

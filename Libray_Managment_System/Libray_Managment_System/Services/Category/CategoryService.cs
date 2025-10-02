@@ -1,4 +1,6 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using AutoMapper;
+using Libray_Managment_System.DtoModels.CategoryModels;
+using System;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,48 +8,52 @@ namespace Libray_Managment_System.Services.Category;
 
 public class CategoryService : ICategoryService
 {
-    private readonly ICategoryRepository _categoryRepository;
-    public CategoryService (ICategoryRepository categoryRepository)
-    {
-        _categoryRepository = categoryRepository;
-    }
-    // Create
-    public async Task AddCategoryAsync(CategoryDTO dto)
-    {
-        var entity = new Models.Category
-        {
-            Name = dto.Name
-        };
+    private readonly LibraryManagmentSystemContext _context;
+    private readonly IMapper _mapper;
 
-        await _categoryRepository.AddAsync(entity);
-    }
-    // Read
-    public async Task<IEnumerable<CategoryDTO>> GetCategoriesAsync()
+    public CategoryService(LibraryManagmentSystemContext context, IMapper mapper)
     {
-        var categories = await _categoryRepository.GetAllAsync();
-        return categories.Select(c => new CategoryDTO
-        {
-            Id = c.Id,
-            Name = c.Name
-        });
+        _context = context;
+        _mapper = mapper;
     }
 
-    public async Task UpdateCategoryAsync(CategoryDTO dto)
+    public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync()
     {
-        var category = await _categoryRepository.GetByIdAsync(dto.Id);
-        if (category == null)
-            throw new KeyNotFoundException("Not Found");
-
-        category.Name = dto.Name;
-        await _categoryRepository.UpdateAsync(category);
+        var categories = await _context.Categories.ToListAsync();
+        return _mapper.Map<IEnumerable<CategoryResponseDto>>(categories);
     }
 
-    public Task DeleteCategoryAsync(int categoryId)
+    public async Task<CategoryResponseDto?> GetByIdAsync(int id)
     {
-        var category = _categoryRepository.GetByIdAsync(categoryId);
-        if (category == null)
-            throw new KeyNotFoundException("Not Found");
+        var category = await _context.Categories.FindAsync(id);
+        return category == null ? null : _mapper.Map<CategoryResponseDto>(category);
+    }
 
-        return _categoryRepository.DeleteAsync(category.Result);
+    public async Task<CategoryResponseDto> CreateAsync(CategoryCreateDto dto)
+    {
+        var category = _mapper.Map<Models.Category>(dto);
+        _context.Categories.Add(category);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<CategoryResponseDto>(category);
+    }
+
+    public async Task<CategoryResponseDto?> UpdateAsync(int id, CategoryUpdateDto dto)
+    {
+        var category = await _context.Categories.FindAsync(id);
+        if (category == null) return null;
+
+        _mapper.Map(dto, category);
+        await _context.SaveChangesAsync();
+        return _mapper.Map<CategoryResponseDto>(category);
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var category = await _context.Categories.FindAsync(id);
+        if (category == null) return false;
+
+        _context.Categories.Remove(category);
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

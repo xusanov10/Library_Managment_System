@@ -1,5 +1,7 @@
 ﻿using Library_Management_System.Services;
 using Libray_Managment_System.DtoModels;
+using Libray_Managment_System.DTOs.LoginModels;
+using Libray_Managment_System.DTOs.UserModels;
 using Libray_Managment_System.Models;
 using Libray_Managment_System.Services.User;
 using Microsoft.EntityFrameworkCore;

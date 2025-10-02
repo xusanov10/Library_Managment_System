@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
+using Libray_Managment_System.DIContainer;
+using Libray_Managment_System.MappingProfile;
 
 internal class Program
 {
@@ -17,17 +19,14 @@ internal class Program
 
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddScoped<ITokenService, TokenService>();
-        builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IRoleService, RoleService>();
-        builder.Services.AddScoped<IAuthorService, AuthorService>();
-        builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+        // DI Container
+        builder.Services.ServiceAllInjection(builder.Configuration);
 
+        // AutoMapper 
+        builder.Services.AddAutoMapper(typeof(BookProfile));
 
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-        builder.Services.AddDbContext<LibraryManagmentSystemContext>(options =>
-            options.UseNpgsql(connectionString));
+        // DatabaseInjection
+        builder.Services.DataBaseInjection(builder.Configuration);
 
         //JWT Config
         var jwtConfig = builder.Configuration.GetSection("Jwt");

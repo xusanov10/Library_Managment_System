@@ -1,4 +1,4 @@
-﻿using Libray_Managment_System.Enum;
+﻿using Libray_Managment_System.DtoModels.ReportModels;
 using Libray_Managment_System.Services.ReportService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,30 +8,41 @@ namespace Libray_Managment_System.Controllers;
 [Route("api/[controller]")]
 public class ReportController : ControllerBase
 {
-    private readonly IReportService _reportService;
-    public ReportController(IReportService reportService)
+    private readonly IReportService _service;
+
+    public ReportController(IReportService service)
     {
-        _reportService = reportService;
+        _service = service;
     }
 
-    [HttpGet("generate")]
-    public async Task<IActionResult> GenerateReport(
-        [FromQuery] ReportType type,
-        [FromQuery] DateTime? from = null,
-        [FromQuery] DateTime? to = null)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ReportResponseDto>>> GetAll() => Ok(await _service.GetAllAsync());
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ReportResponseDto>> GetById(int id)
     {
-        try
-        {
-            var report = await _reportService.GenerateReportAsync(type, from, to);
-            return Ok(report);
-        }
-        catch (ArgumentException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, new { message = "Serverda xatolik yuz berdi." });
-        }
+        var report = await _service.GetByIdAsync(id);
+        return report == null ? NotFound() : Ok(report);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ReportResponseDto>> Create(ReportCreateDto dto)
+    {
+        var created = await _service.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ReportResponseDto>> Update(int id, ReportUpdateDto dto)
+    {
+        var updated = await _service.UpdateAsync(id, dto);
+        return updated == null ? NotFound() : Ok(updated);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var deleted = await _service.DeleteAsync(id);
+        return deleted ? NoContent() : NotFound();
     }
 }

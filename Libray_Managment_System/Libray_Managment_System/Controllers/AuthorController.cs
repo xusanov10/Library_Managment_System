@@ -1,4 +1,4 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using Libray_Managment_System.DtoModels.AuthorModels;
 using Libray_Managment_System.Services.AuthorService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,63 +8,41 @@ namespace Libray_Managment_System.Controllers;
 [Route("api/[controller]")]
 public class AuthorController : ControllerBase
 {
-    private readonly IAuthorService _authorService;
-    public AuthorController(IAuthorService authorService)
+    private readonly IAuthorService _service;
+
+    public AuthorController(IAuthorService service)
     {
-        _authorService = authorService;
+        _service = service;
     }
 
-    [HttpPost("add")]
-    public async Task<IActionResult> AddAuthor([FromBody] AuthorDTO dto)
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<AuthorResponseDto>>> GetAll() => Ok(await _service.GetAllAsync());
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AuthorResponseDto>> GetById(int id)
     {
-        await _authorService.AddAuthorAsync(dto);
-        return Ok(new { message = "Author Added." });
+        var author = await _service.GetByIdAsync(id);
+        return author == null ? NotFound() : Ok(author);
     }
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAllAuthors()
+    [HttpPost]
+    public async Task<ActionResult<AuthorResponseDto>> Create(AuthorCreateDto dto)
     {
-        var authors = await _authorService.GetAuthorsAsync();
-        return Ok(authors);
+        var created = await _service.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
     }
 
-    [HttpGet("{authorId}")]
-    public async Task<IActionResult> GetAuthorById(int authorId)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<AuthorResponseDto>> Update(int id, AuthorUpdateDto dto)
     {
-        try
-        {
-            var author = await _authorService.GetAuthorByIdAsync(authorId);
-            return Ok(author);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var updated = await _service.UpdateAsync(id, dto);
+        return updated == null ? NotFound() : Ok(updated);
     }
-    [HttpPut("update")]
-    public async Task<IActionResult> UpdateAuthor([FromBody] AuthorDTO dto)
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
     {
-        try
-        {
-            await _authorService.UpdateAuthorAsync(dto);
-            return Ok(new { message = "Author Updated." });
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
-    }
-    [HttpDelete("delete")]
-    public async Task<IActionResult> DeleteAuthor([FromBody] AuthorDTO dto)
-    {
-        try
-        {
-            await _authorService.DeleteAuthorAsync(dto);
-            return Ok(new { message = "Author Deleted." });
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var deleted = await _service.DeleteAsync(id);
+        return deleted ? NoContent() : NotFound();
     }
 }

@@ -1,12 +1,12 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using Libray_Managment_System.DTOs.BookModels;
 
 namespace Libray_Managment_System.Services.Book;
 
 public interface IBookService
 {
-    Task AddBookAsync(BookDTO dto);
-    Task<IEnumerable<BookDTO>> GetBooksAsync(FilterDTO filter);
-    Task UpdateBookAsync(BookDTO dto);
-    Task DeleteBookAsync(int bookId);
-    Task<BookDTO> GetBookByIdAsync(int bookId);
+    Task<IEnumerable<BookResponseDto>> GetAllAsync();
+    Task<BookResponseDto?> GetByIdAsync(int id);
+    Task<BookResponseDto> CreateAsync(BookCreateDto dto);
+    Task<BookResponseDto?> UpdateAsync(int id, BookUpdateDto dto);
+    Task<bool> DeleteAsync(int id);
 }
