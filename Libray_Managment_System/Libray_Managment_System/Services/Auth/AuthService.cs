@@ -1,4 +1,5 @@
 ﻿using Libray_Managment_System.DtoModels;
+using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,20 +13,23 @@ namespace Libray_Managment_System.Services.Auth
     public class AuthService : IAuthService
     {
         private readonly LibraryManagmentSystemContext _context;
-        private readonly IConfiguration _config;
+        private readonly ITokenService _tokenService;
 
-        public AuthService(LibraryManagmentSystemContext context, IConfiguration config)
+        public AuthService(LibraryManagmentSystemContext context, ITokenService tokenService)
         {
             _context = context;
-            _config = config;
+            _tokenService = tokenService;
         }
 
-        public async Task<string> RegisterUserAsync(RegisterDTO dto)
+        public async Task<ResultDTO> RegisterUserAsync(RegisterDTO dto)
         {
             var exists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
             if (exists)
-                return "User already exists!";
-
+                return new ResultDTO<string>
+                {
+                    Message = "Email already in use!",
+                    StatusCode = 400,
+                };
             var user = new User
             {
                 Fullname = dto.FullName,
@@ -38,34 +42,43 @@ namespace Libray_Managment_System.Services.Auth
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            return "User registered successfully!";
+            var studentRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Student");
+            if (studentRole != null)
+            {
+                var userRole = new Userrole
+                {
+                    Userid = user.Id,
+                    Roleid = studentRole.Id
+                };
+                await _context.Userroles.AddAsync(userRole);
+                await _context.SaveChangesAsync();
+            }
+
+            return new ResultDTO
+            {
+                Message = "User registered successfully!",
+                StatusCode = 201
+            };
         }
 
-        public async Task<string?> LoginUserAsync(LoginDTO dto)
+        public async Task<ResultDTO<string>> LoginUserAsync(LoginDTO dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Passwordhash))
-                return null;
+                return new ResultDTO<string>
+                {
+                    Message = "Invalid email or password!",
+                    StatusCode = 401,
+                    Data = "error"
 
-            // JWT token yaratish
-            var claims = new[]
+                };
+            var token = _tokenService.GenerateToken(user);
+            return new ResultDTO<string>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.Fullname)
+                Message = "Login successful!",
+                StatusCode = 200,
+                Data = await token
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
