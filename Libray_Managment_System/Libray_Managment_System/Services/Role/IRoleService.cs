@@ -5,11 +5,11 @@ namespace Libray_Managment_System.Services.Role
 {
     public interface IRoleService
     {
-        Task<ResultDTO> CreateRoleAsync(RoleDTO dto);
+        Task<Result> CreateRoleAsync(RoleDTO dto);
         Task<ResultDTO<IEnumerable<RoleDTO>>> GetAllRolesAsync();
         Task<ResultDTO<RoleDTO?>> GetRoleByIdAsync(int id);
-        Task<ResultDTO> DeleteRoleAsync(int id);
-        Task<ResultDTO> AssignPermissionAsync(RolePermissionDTO dto);
-        Task<ResultDTO> UpdatePermissionsAsync(int roleId, List<int> permissionIds);
+        Task<Result> DeleteRoleAsync(int id);
+        Task<Result> AssignPermissionAsync(RolePermissionDTO dto);
+        Task<Result> UpdatePermissionsAsync(int roleId, List<int> permissionIds);
     }
 }

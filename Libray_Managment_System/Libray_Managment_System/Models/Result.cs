@@ -2,7 +2,7 @@
 
 namespace Libray_Managment_System.DTOModels
 {
-    public class ResultDTO : IActionResult
+    public class Result : IActionResult
     {
         public string? Message { get; set; }
         public int StatusCode { get; set; }
@@ -17,7 +17,7 @@ namespace Libray_Managment_System.DTOModels
         }
     }
 
-    public class ResultDTO<T> : ResultDTO
+    public class ResultDTO<T> : Result
     {
         public T Data { get; set; }
     }
