@@ -21,7 +21,7 @@ namespace Libray_Managment_System.Services.Auth
             _tokenService = tokenService;
         }
 
-        public async Task<ResultDTO> RegisterUserAsync(RegisterDTO dto)
+        public async Task<Result> RegisterUserAsync(RegisterDTO dto)
         {
             var exists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
             if (exists)
@@ -54,7 +54,7 @@ namespace Libray_Managment_System.Services.Auth
                 await _context.SaveChangesAsync();
             }
 
-            return new ResultDTO
+            return new Result
             {
                 Message = "User registered successfully!",
                 StatusCode = 201

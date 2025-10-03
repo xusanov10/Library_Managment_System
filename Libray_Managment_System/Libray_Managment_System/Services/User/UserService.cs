@@ -13,11 +13,11 @@ public class UserService : IUserService
         _context = context;
     }
 
-    public async Task<ResultDTO> CreateUserProfileAsync(CreateUserProfileDTO dto)
+    public async Task<Result> CreateUserProfileAsync(CreateUserProfileDTO dto)
     {
         var user = await _context.Users.AnyAsync(x => x.Id == 2);
         if (user)
-            return new ResultDTO
+            return new Result
             {
                 Message = "User not found!",
                 StatusCode = 404,
@@ -25,7 +25,7 @@ public class UserService : IUserService
 
         var existingProfile = await _context.Userprofiles.FindAsync(dto.UserId);
         if (existingProfile != null)
-            return new ResultDTO
+            return new Result
             {
                 Message = "User profile already exists!",
                 StatusCode = 404,
@@ -43,7 +43,7 @@ public class UserService : IUserService
         await _context.Userprofiles.AddAsync(profile);
         await _context.SaveChangesAsync();
 
-        return  new ResultDTO
+        return  new Result
         {
             Message = "User profile created successfully!",
             StatusCode = 201,
@@ -121,10 +121,10 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<ResultDTO> UpdateUserProfileAsync(int id, UserProfileDTO dto)
+    public async Task<Result> UpdateUserProfileAsync(int id, UserProfileDTO dto)
     {
         var user = await _context.Userprofiles.AnyAsync(a => a.Id == id);
-        if (user) return new ResultDTO
+        if (user) return new Result
         {
             Message = "User profile not found",
             StatusCode = 404
@@ -137,35 +137,35 @@ public class UserService : IUserService
         };
         _context.Userprofiles.Update(updateUser);
         _context.SaveChanges();
-        return new ResultDTO
+        return new Result
         {
             Message = "User profile updated successfully",
             StatusCode = 200
         };
     }
 
-    public async Task<ResultDTO> DeleteUserAsync(int id)
+    public async Task<Result> DeleteUserAsync(int id)
     {
         var user = await _context.Users.FindAsync(id);
-        if (user == null) return new ResultDTO
+        if (user == null) return new Result
         {
             Message = "User not found",
             StatusCode = 404
         };
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();
-        return new ResultDTO
+        return new Result
         {
             Message = "User deleted successfully!",
             StatusCode = 200
         };
     }
 
-    public async Task<ResultDTO> UpdateUserAsync(int id, UpdateUserDTO dto)
+    public async Task<Result> UpdateUserAsync(int id, UpdateUserDTO dto)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null)
-            return new ResultDTO
+            return new Result
             {
                 Message = "User not found!",
                 StatusCode = 404,
@@ -181,7 +181,7 @@ public class UserService : IUserService
             user.Status = dto.Status;
 
         await _context.SaveChangesAsync();
-        return new ResultDTO
+        return new Result
         {
             Message = "User updated successfully!",
             StatusCode = 200,
