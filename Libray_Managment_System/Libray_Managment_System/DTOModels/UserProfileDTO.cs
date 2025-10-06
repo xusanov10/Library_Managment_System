@@ -9,5 +9,8 @@
         public DateOnly? Birthdate { get; set; }
 
         public string? Gender { get; set; }
+
+        public string? ProfilePictureUrl { get; set; } // fayl URL manzili
+
     }
 }
