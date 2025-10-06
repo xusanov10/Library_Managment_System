@@ -25,7 +25,7 @@ namespace Libray_Managment_System.Services.Auth
         {
             var exists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
             if (exists)
-                return new ResultDTO<string>
+                return new Result<string>
                 {
                     Message = "Email already in use!",
                     StatusCode = 400,
@@ -61,11 +61,11 @@ namespace Libray_Managment_System.Services.Auth
             };
         }
 
-        public async Task<ResultDTO<string>> LoginUserAsync(LoginDTO dto)
+        public async Task<Result<string>> LoginUserAsync(LoginDTO dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Passwordhash))
-                return new ResultDTO<string>
+                return new Result<string>
                 {
                     Message = "Invalid email or password!",
                     StatusCode = 401,
@@ -73,7 +73,7 @@ namespace Libray_Managment_System.Services.Auth
 
                 };
             var token = _tokenService.GenerateToken(user);
-            return new ResultDTO<string>
+            return new Result<string>
             {
                 Message = "Login successful!",
                 StatusCode = 200,
