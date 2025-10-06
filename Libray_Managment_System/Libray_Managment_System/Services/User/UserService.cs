@@ -1,167 +1,249 @@
-﻿using Libray_Managment_System.Models;
-using Microsoft.Extensions.Options;
-using Minio;
-using Minio.DataModel.Args;
-using Minio.Exceptions;
+﻿using Library_Management_System.Services;
+using Libray_Managment_System.DtoModels;
+using Libray_Managment_System.DTOModels;
+using Libray_Managment_System.Models;
+using Libray_Managment_System.Services;
+using Libray_Managment_System.Services.Users;
+using Microsoft.EntityFrameworkCore;
 
-namespace Library_Managment_System.Services.User
+public class UserService : IUserService
 {
-    public class MinioFileStorageService : IFileStorageService
+    private readonly LibraryManagmentSystemContext _context;
+    private readonly IFileStorageService _fileStorageService;
+
+    public UserService(LibraryManagmentSystemContext context, IFileStorageService fileStorageService)
     {
-        private readonly IMinioClient _minioClient;
-        private readonly MinioSettings _minioSettings;
+        _fileStorageService = fileStorageService;
+        _context = context;
+    }
 
-        // Dependency Injection orqali IMinioClient va MinioSettings ni qabul qiladi
-        public MinioFileStorageService(IMinioClient minioClient, IOptions<MinioSettings> minioSettings)
-        {
-            _minioClient = minioClient;
-            _minioSettings = minioSettings.Value;
-        }
-
-        public async Task<string> UploadFileAsync(string bucketName, string objectName, Stream data, string contentType)
-        {
-            try
+   /* public async Task<Result> CreateUserProfileAsync(CreateUserProfileDTO dto)
+    {
+        // Foydalanuvchi mavjudligini tekshirish
+        var userExists = await _context.Users.AnyAsync(x => x.Id == dto.UserId);
+        if (!userExists)
+            return new Result
             {
-                // Agar bucket (saqlash joyi) mavjud bo'lmasa, uni yaratamiz
-                bool found = await _minioClient.BucketExistsAsync(
-                    new BucketExistsArgs().WithBucket(bucketName)
-                ).ConfigureAwait(false);
+                Message = "User not found!",
+                StatusCode = 404,
+            };
 
-                if (!found)
+        // Profil mavjudligini tekshirish
+        var existingProfile = await _context.Userprofiles.FindAsync(dto.UserId);
+        if (existingProfile != null)
+            return new Result
+            {
+                Message = "User profile already exists!",
+                StatusCode = 400,
+            };
+
+        string? profilePictureUrl = null;
+
+        // 📸 Agar rasm yuborilgan bo‘lsa — MinIO ga yuklash
+        if (dto.ProfilePicture != null)
+        {
+            var bucketName = "user-profile-pictures";
+            var objectName = $"{Guid.NewGuid()}_{dto.ProfilePicture.FileName}";
+
+            using var stream = dto.ProfilePicture.OpenReadStream();
+
+            var uploadResult = await _fileStorageService.UploadFileAsync(
+                bucketName,
+                objectName,
+                stream,
+                dto.ProfilePicture.ContentType
+            );
+
+            // ❌ IsSuccess o‘rniga StatusCode tekshiramiz
+            if (uploadResult.StatusCode != 200 && uploadResult.StatusCode != 201)
+            {
+                return new Result
                 {
-                    await _minioClient.MakeBucketAsync(
-                        new MakeBucketArgs().WithBucket(bucketName)
-                    ).ConfigureAwait(false);
-                }
+                    Message = "Failed to upload profile picture!",
+                    StatusCode = 500
+                };
+            }
 
-                // Faylni Minio'ga yuklash
-                await _minioClient.PutObjectAsync(
-                    new PutObjectArgs()
-                        .WithBucket(bucketName)
-                        .WithObject(objectName)
-                        .WithStreamData(data) // Yuklanayotgan fayl stream'i
-                        .WithObjectSize(data.Length) // Faylning hajmi
-                        .WithContentType(contentType) // Faylning turi (masalan, "image/jpeg")
-                ).ConfigureAwait(false);
-
-                // Yuklangan faylga to'g'ridan-to'g'ri kirish URL'ini qaytarish
-                // Bu URL Minio serverining manzili va bucket/object nomini o'z ichiga oladi.
-                // Masalan: http://localhost:9000/my-bucket/my-image.jpg
-                return $"http://{_minioSettings.Endpoint}/{bucketName}/{objectName}";
-            }
-            catch (MinioException e) // Minio'dan kelgan xatoliklarni qayd etish
-            {
-                Console.WriteLine($"[Minio] Upload Error: {e.Message}");
-                throw; // Xatolikni yuqoriga uzatamiz
-            }
-            catch (Exception e) // Boshqa umumiy xatoliklarni qayd etish
-            {
-                Console.WriteLine($"[General] Error during upload: {e.Message}");
-                throw;
-            }
+            // Fayl URL ni olamiz
+            profilePictureUrl = uploadResult.Value;
         }
 
-        public async Task<Stream> DownloadFileAsync(string bucketName, string objectName)
+        // ✅ Profil yaratish
+        var profile = new Userprofile
         {
-            try
-            {
-                var memoryStream = new MemoryStream();
-                await _minioClient.GetObjectAsync(
-                    new GetObjectArgs()
-                        .WithBucket(bucketName)
-                        .WithObject(objectName)
-                        .WithCallbackStream(async (stream) => // Fayl streamini memoryStream ga nusxalash
-                        {
-                            await stream.CopyToAsync(memoryStream);
-                        })
-                ).ConfigureAwait(false);
+            Id = dto.UserId,
+            Phonenumber = dto.PhoneNumber,
+            Address = dto.Address,
+            Birthdate = dto.BirthDate,
+            Gender = dto.Gender,
+            ProfilePictureUrl = profilePictureUrl // yangi property
+        };
 
-                memoryStream.Position = 0; // Streamni boshiga qaytarish, chunki undan o'qish mumkin bo'lishi uchun
-                return memoryStream;
-            }
-            catch (MinioException e)
-            {
-                Console.WriteLine($"[Minio] Download Error: {e.Message}");
-                throw;
-            }
-        }
+        await _context.Userprofiles.AddAsync(profile);
+        await _context.SaveChangesAsync();
 
-        public async Task<bool> FileExistsAsync(string bucketName, string objectName)
+        return new Result
         {
-            try
+            Message = "User profile created successfully!",
+            StatusCode = 201,
+        };
+    }
+*/
+    // Barcha foydalanuvchilarni olish
+    public async Task<Result<IEnumerable<UserDTO>>> GetAllUsersAsync()
+    {
+        var result = await _context.Users
+            .Select(u => new UserDTO
             {
-                // StatObjectAsync fayl haqida ma'lumotni oladi, agar mavjud bo'lmasa xato tashlaydi
-                await _minioClient.StatObjectAsync(
-                    new StatObjectArgs()
-                        .WithBucket(bucketName)
-                        .WithObject(objectName)
-                ).ConfigureAwait(false);
-                return true; // Fayl mavjud
-            }
-            catch (MinioException e) when (e.Message.Contains("Object does not exist")) // Fayl topilmaganligini aniqlash
-            {
-                return false; // Fayl mavjud emas
-            }
-            catch (Exception) // Boshqa har qanday xato
-            {
-                throw;
-            }
-        }
-
-
-        public async Task<bool> RemoveFileAsync(string bucketName, string objectName)
+                Id = u.Id,
+                Fullname = u.Fullname,
+                Email = u.Email,
+                Status = u.Status
+            })
+            .ToListAsync();
+        return new Result<IEnumerable<UserDTO>>
         {
-            try
-            {
-                await _minioClient.RemoveObjectAsync(
-                    new RemoveObjectArgs()
-                        .WithBucket(bucketName)
-                        .WithObject(objectName)
-                ).ConfigureAwait(false);
-                return true;
-            }
-            catch (MinioException e)
-            {
-                Console.WriteLine($"[Minio] Remove Error: {e.Message}");
-                throw;
-            }
-        }
+            Data = result,
+            Message = "Users retrieved successfully!",
+            StatusCode = 200,
+        };
+    }
 
-        public async Task<bool> BucketExistsAsync(string bucketName)
+    // Foydalanuvchini ID orqali olish
+    public async Task<Result<UserDTO?>> GetUserByIdAsync(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return null;
+
+        return new Result<UserDTO?>
         {
-            try
+            Data = new UserDTO
             {
-                return await _minioClient.BucketExistsAsync(
-                    new BucketExistsArgs().WithBucket(bucketName)
-                ).ConfigureAwait(false);
-            }
-            catch (MinioException e)
-            {
-                Console.WriteLine($"[Minio] Bucket Check Error: {e.Message}");
-                throw;
-            }
-        }
+                Id = user.Id,
+                Fullname = user.Fullname,
+                Email = user.Email,
+                Status = user.Status
+            },
+            Message = "User retrieved successfully!",
+            StatusCode = 200,
+        };
+    }
 
-        public async Task CreateBucketAsync(string bucketName)
+    // Role biriktirish
+    public async Task<Result<bool>> AssignRoleAsync(UserRoleDTO dto)
+    {
+        var user = await _context.Users.FindAsync(dto.UserId);
+        var role = await _context.Roles.FindAsync(dto.RoleId);
+
+        if (user == null || role == null)
+            return new Result<bool>
+            {
+                Data = false,
+                Message = "User or Role not found!",
+                StatusCode = 404,
+            };
+
+        var userRole = new Userrole
         {
-            try
-            {
-                bool found = await _minioClient.BucketExistsAsync(
-                    new BucketExistsArgs().WithBucket(bucketName)
-                ).ConfigureAwait(false);
+            Userid = dto.UserId,
+            Roleid = dto.RoleId
+        };
 
-                if (!found)
-                {
-                    await _minioClient.MakeBucketAsync(
-                        new MakeBucketArgs().WithBucket(bucketName)
-                    ).ConfigureAwait(false);
-                }
-            }
-            catch (MinioException e)
+        await _context.Userroles.AddAsync(userRole);
+        await _context.SaveChangesAsync();
+
+        return new Result<bool>
+        {
+            Data = true,
+            Message = "Role assigned successfully!",
+            StatusCode = 200,
+        };
+    }
+
+    public async Task<Result> UpdateUserProfileAsync(int id, UserProfileDTO dto)
+    {
+        var user = await _context.Userprofiles.AnyAsync(a => a.Id == id);
+        if (user) return new Result
+        {
+            Message = "User profile not found",
+            StatusCode = 404
+        };
+        var updateUser = new Userprofile
+        {
+            Phonenumber = dto.Phonenumber,
+            Address = dto.Address,
+            Birthdate = dto.Birthdate
+        };
+        _context.Userprofiles.Update(updateUser);
+        _context.SaveChanges();
+        return new Result
+        {
+            Message = "User profile updated successfully",
+            StatusCode = 200
+        };
+    }
+
+    public async Task<Result> DeleteUserAsync(int id)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null) return new Result
+        {
+            Message = "User not found",
+            StatusCode = 404
+        };
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+        return new Result
+        {
+            Message = "User deleted successfully!",
+            StatusCode = 200
+        };
+    }
+
+    public async Task<Result> UpdateUserAsync(int id, UpdateUserDTO dto)
+    {
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+            return new Result
             {
-                Console.WriteLine($"[Minio] Create Bucket Error: {e.Message}");
-                throw;
-            }
-        }
+                Message = "User not found!",
+                StatusCode = 404,
+            };
+
+        if (!string.IsNullOrWhiteSpace(dto.FullName))
+            user.Fullname = dto.FullName;
+
+        if (!string.IsNullOrWhiteSpace(dto.Email))
+            user.Email = dto.Email;
+
+        if (dto.Status.HasValue)
+            user.Status = dto.Status;
+
+        await _context.SaveChangesAsync();
+        return new Result
+        {
+            Message = "User updated successfully!",
+            StatusCode = 200,
+        };
+    }
+    public async Task<Result<IEnumerable<UserDTO>>> GetUsersByRoleAsync(string roleName)
+    {
+        var users = await _context.Users
+            .Where(u => u.Userroles.Any(ur => ur.Role.Name == roleName))
+            .Select(u => new UserDTO
+            {
+                Id = u.Id,
+                Fullname = u.Fullname,
+                Email = u.Email,
+                Status = u.Status
+            })
+            .ToListAsync();
+
+        return new Result<IEnumerable<UserDTO>>
+        {
+            Data = users,
+            Message = "Users with the specified role retrieved successfully!",
+            StatusCode = 200,
+        };
     }
 }
