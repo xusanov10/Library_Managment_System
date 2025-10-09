@@ -1,4 +1,5 @@
-﻿using Libray_Managment_System.Enum;
+﻿using Libray_Managment_System.DTOModels;
+using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,8 +26,8 @@ namespace Libray_Managment_System.Services.Borrow
 
             var record = new Borrowrecord
             {
-                Userid = dto.UserId,
-                Bookcopyid = dto.BookCopyId,
+                UserId = dto.UserId,
+                BookcopyId = dto.BookCopyId,
                 Borrowdate = DateTime.UtcNow,
                 Duedate = dto.Duedate,
                 Status = BorrowStatus.Borrowed
@@ -38,8 +39,8 @@ namespace Libray_Managment_System.Services.Borrow
             return new BorrowResponseDto
             {
                 BorrowRecordId = record.Id,
-                UserId = record.Userid,
-                BookCopyId = record.Bookcopyid,
+                UserId = record.UserId,
+                BookCopyId = record.BookcopyId,
                 BorrowDate = record.Borrowdate.Value,
                 DueDate = record.Duedate,
                 Status = record.Status
@@ -57,7 +58,7 @@ namespace Libray_Managment_System.Services.Borrow
             record.Status = BorrowStatus.Returned;
             record.Returndate = DateTime.UtcNow;
 
-            var copy = await _context.Bookcopies.FindAsync(record.Bookcopyid);
+            var copy = await _context.Bookcopies.FindAsync(record.BookcopyId);
             if (copy != null)
             {
                 copy.Status = BookCopyStatus.Available;
@@ -71,12 +72,12 @@ namespace Libray_Managment_System.Services.Borrow
         {
             try
             {
-                var records = await _context.Borrowrecords.Where(b => b.Userid == userId).ToListAsync();
+                var records = await _context.Borrowrecords.Where(b => b.UserId == userId).ToListAsync();
                 return records.Select(r => new BorrowResponseDto
                 {
                     BorrowRecordId = r.Id,
-                    UserId = r.Userid,
-                    BookCopyId = r.Bookcopyid,
+                    UserId = r.UserId,
+                    BookCopyId = r.BookcopyId,
                     BorrowDate = r.Borrowdate.Value,
                     DueDate = r.Duedate,
                     Status = r.Status
@@ -98,8 +99,8 @@ namespace Libray_Managment_System.Services.Borrow
                 return records.Select(r => new BorrowResponseDto
                 {
                     BorrowRecordId = r.Id,
-                    UserId = r.Userid,
-                    BookCopyId = r.Bookcopyid,
+                    UserId = r.UserId,
+                    BookCopyId = r.BookcopyId,
                     BorrowDate = r.Borrowdate.Value,
                     DueDate = r.Duedate,
                     Status = r.Status

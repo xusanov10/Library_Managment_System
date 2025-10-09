@@ -6,10 +6,8 @@ namespace Libray_Managment_System.Models;
 public partial class Fine
 {
     public int Id { get; set; }
-
-    public int Userid { get; set; }
-
-    public int Borrowrecordid { get; set; }
+    public int UserId { get; internal set; }
+    public int BorrowRecordId { get; set; }
 
     public decimal Amount { get; set; }
 

@@ -9,11 +9,11 @@ public partial class Book
 
     public string Title { get; set; } = null!;
 
-    public int Authorid { get; set; }
+    public int AuthorId { get; set; }
 
-    public int Publisherid { get; set; }
+    public int PublisherId { get; set; }
 
-    public int Categoryid { get; set; }
+    public int CategoryId { get; set; }
 
     public string? Isbn { get; set; }
 

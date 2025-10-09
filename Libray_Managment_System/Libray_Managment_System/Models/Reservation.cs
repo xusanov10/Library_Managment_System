@@ -8,11 +8,11 @@ public partial class Reservation
 {
     public int Id { get; set; }
 
-    public int Userid { get; set; }
+    public int UserId { get; set; }
 
-    public int Bookcopyid { get; set; }
+    public int BookcopyId { get; set; }
 
-    public DateTime? Reserveddate { get; set; } = DateTime.UtcNow;
+    public DateTime? ReservedDate { get; set; } = DateTime.UtcNow;
     public ReservationStatus Status { get; set; } = ReservationStatus.Pending;
     public virtual Bookcopy Bookcopy { get; set; } = null!;
 

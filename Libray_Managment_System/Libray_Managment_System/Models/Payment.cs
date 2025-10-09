@@ -7,9 +7,9 @@ public partial class Payment
 {
     public int Id { get; set; }
 
-    public int Userid { get; set; }
+    public int UserId { get; set; }
 
-    public int Fineid { get; set; }
+    public int FineId { get; set; }
 
     public decimal Amount { get; set; }
 

@@ -8,9 +8,9 @@ public partial class Borrowrecord
 {
     public int Id { get; set; }
 
-    public int Userid { get; set; }
+    public int UserId { get; set; }
 
-    public int Bookcopyid { get; set; }
+    public int BookcopyId { get; set; }
 
     public DateTime? Borrowdate { get; set; } = DateTime.UtcNow;
 

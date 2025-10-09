@@ -1,4 +1,6 @@
-﻿namespace Libray_Managment_System.Services.Borrow
+﻿using Libray_Managment_System.DTOModels;
+
+namespace Libray_Managment_System.Services.Borrow
 {
     public interface IBorrowService
     {

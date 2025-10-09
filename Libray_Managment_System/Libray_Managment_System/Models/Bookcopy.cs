@@ -8,7 +8,7 @@ public partial class Bookcopy
 {
     public int Id { get; set; }
 
-    public int Bookid { get; set; }
+    public int BookId { get; set; }
 
     public int Copynumber { get; set; }
     public BookCopyStatus Status { get; set; } = BookCopyStatus.Available;
