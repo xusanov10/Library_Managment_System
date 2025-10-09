@@ -13,6 +13,8 @@ public partial class Userprofile
 
     public DateOnly? Birthdate { get; set; }
 
+    public string? ProfilePictureUrl { get; set; } // MinIO URL
+
     public string? Gender { get; set; }
 
     public virtual User IdNavigation { get; set; } = null!;

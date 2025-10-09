@@ -1,5 +1,4 @@
 ﻿using Libray_Managment_System.DtoModels;
-using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,7 +39,7 @@ namespace Libray_Managment_System.Services.Role
             };
         }
 
-        public async Task<ResultDTO<IEnumerable<RoleDTO>>> GetAllRolesAsync()
+        public async Task<Result<IEnumerable<RoleDTO>>> GetAllRolesAsync()
         {
             var role = await _context.Roles
                 .Select(r => new RoleDTO
@@ -51,7 +50,7 @@ namespace Libray_Managment_System.Services.Role
                 })
                 .ToListAsync();
 
-            return new ResultDTO<IEnumerable<RoleDTO>>
+            return new Result<IEnumerable<RoleDTO>>
             {
                 Data = role,
                 Message = "Roles retrieved successfully!",
@@ -59,17 +58,17 @@ namespace Libray_Managment_System.Services.Role
             };
         }
 
-        public async Task<ResultDTO<RoleDTO>> GetRoleByIdAsync(int id)
+        public async Task<Result<RoleDTO>> GetRoleByIdAsync(int id)
         {
             var role = await _context.Roles.FindAsync(id);
             if (role == null) 
-               return new ResultDTO<RoleDTO>
+               return new Result<RoleDTO>
                {
                    Message = "Role not found!",
                    StatusCode = 404,
                };
 
-            return new ResultDTO<RoleDTO>
+            return new Result<RoleDTO>
             {
                 Data = new RoleDTO
                 {
