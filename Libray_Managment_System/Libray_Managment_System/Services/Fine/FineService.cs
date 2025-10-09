@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library_Managment_System.Services.Fine
 {
-    public class FineService : IFineService
+    public class FineService
     {
         private readonly LibraryManagmentSystemContext _context;
 

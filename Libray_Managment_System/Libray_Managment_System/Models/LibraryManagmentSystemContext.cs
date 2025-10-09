@@ -82,8 +82,8 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.HasIndex(e => e.Isbn, "books_isbn_key").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Authorid).HasColumnName("authorid");
-            entity.Property(e => e.Categoryid).HasColumnName("categoryid");
+            entity.Property(e => e.AuthorId).HasColumnName("authorid");
+            entity.Property(e => e.CategoryId).HasColumnName("categoryid");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("createdat");
@@ -94,7 +94,7 @@ public partial class LibraryManagmentSystemContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("isbn");
             entity.Property(e => e.Publishedyear).HasColumnName("publishedyear");
-            entity.Property(e => e.Publisherid).HasColumnName("publisherid");
+            entity.Property(e => e.PublisherId).HasColumnName("publisherid");
             entity.Property(e => e.Quantity)
                 .HasDefaultValue(1)
                 .HasColumnName("quantity");
@@ -103,17 +103,17 @@ public partial class LibraryManagmentSystemContext : DbContext
                 .HasColumnName("title");
 
             entity.HasOne(d => d.Author).WithMany(p => p.Books)
-                .HasForeignKey(d => d.Authorid)
+                .HasForeignKey(d => d.AuthorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("books_authorid_fkey");
 
             entity.HasOne(d => d.Category).WithMany(p => p.Books)
-                .HasForeignKey(d => d.Categoryid)
+                .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("books_categoryid_fkey");
 
             entity.HasOne(d => d.Publisher).WithMany(p => p.Books)
-                .HasForeignKey(d => d.Publisherid)
+                .HasForeignKey(d => d.PublisherId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("books_publisherid_fkey");
         });
@@ -125,13 +125,13 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.ToTable("bookcopies");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Bookid).HasColumnName("bookid");
+            entity.Property(e => e.BookId).HasColumnName("bookid");
             entity.Property(e => e.Copynumber).HasColumnName("copynumber");
             entity.Property(e => e.Status).HasColumnType("bookcopystatus");
 
 
             entity.HasOne(d => d.Book).WithMany(p => p.Bookcopies)
-                .HasForeignKey(d => d.Bookid)
+                .HasForeignKey(d => d.BookId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("bookcopies_bookid_fkey");
         });
@@ -143,7 +143,7 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.ToTable("borrowrecords");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Bookcopyid).HasColumnName("bookcopyid");
+            entity.Property(e => e.BookcopyId).HasColumnName("bookcopyid");
             entity.Property(e => e.Status).HasColumnType("borrowstatus");
             entity.Property(e => e.Borrowdate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
@@ -158,15 +158,15 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Returndate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("returndate");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+            entity.Property(e => e.UserId).HasColumnName("userid");
 
             entity.HasOne(d => d.Bookcopy).WithMany(p => p.Borrowrecords)
-                .HasForeignKey(d => d.Bookcopyid)
+                .HasForeignKey(d => d.BookcopyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("borrowrecords_bookcopyid_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.Borrowrecords)
-                .HasForeignKey(d => d.Userid)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("borrowrecords_userid_fkey");
         });
@@ -198,22 +198,22 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Amount)
                 .HasPrecision(10, 2)
                 .HasColumnName("amount");
-            entity.Property(e => e.Borrowrecordid).HasColumnName("borrowrecordid");
+            entity.Property(e => e.BorrowRecordId).HasColumnName("borrowrecordid");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("createdat");
             entity.Property(e => e.Paid)
                 .HasDefaultValue(false)
                 .HasColumnName("paid");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+            entity.Property(e => e.UserId).HasColumnName("userid");
 
             entity.HasOne(d => d.Borrowrecord).WithMany(p => p.Fines)
-                .HasForeignKey(d => d.Borrowrecordid)
+                .HasForeignKey(d => d.BorrowRecordId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fines_borrowrecordid_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.Fines)
-                .HasForeignKey(d => d.Userid)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fines_userid_fkey");
         });
@@ -234,10 +234,10 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Message)
                 .HasMaxLength(500)
                 .HasColumnName("message");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+            entity.Property(e => e.UserId).HasColumnName("userid");
 
             entity.HasOne(d => d.User).WithMany(p => p.Notifications)
-                .HasForeignKey(d => d.Userid)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("notifications_userid_fkey");
         });
@@ -252,22 +252,22 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Amount)
                 .HasPrecision(10, 2)
                 .HasColumnName("amount");
-            entity.Property(e => e.Fineid).HasColumnName("fineid");
+            entity.Property(e => e.FineId).HasColumnName("fineid");
             entity.Property(e => e.Method)
                 .HasMaxLength(50)
                 .HasColumnName("method");
             entity.Property(e => e.Paymentdate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("paymentdate");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+            entity.Property(e => e.UserId).HasColumnName("userid");
 
             entity.HasOne(d => d.Fine).WithMany(p => p.Payments)
-                .HasForeignKey(d => d.Fineid)
+                .HasForeignKey(d => d.FineId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("payments_fineid_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.Payments)
-                .HasForeignKey(d => d.Userid)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("payments_userid_fkey");
         });
@@ -339,20 +339,20 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.ToTable("reservations");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Bookcopyid).HasColumnName("bookcopyid");
+            entity.Property(e => e.BookcopyId).HasColumnName("bookcopyid");
             entity.Property(e => e.Status).HasColumnType("reservationstatus");
-            entity.Property(e => e.Reserveddate)
+            entity.Property(e => e.ReservedDate)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
                 .HasColumnName("reserveddate");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+            entity.Property(e => e.UserId).HasColumnName("userid");
 
             entity.HasOne(d => d.Bookcopy).WithMany(p => p.Reservations)
-                .HasForeignKey(d => d.Bookcopyid)
+                .HasForeignKey(d => d.BookcopyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("reservations_bookcopyid_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.Reservations)
-                .HasForeignKey(d => d.Userid)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("reservations_userid_fkey");
         });
@@ -381,16 +381,16 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.ToTable("rolepermissions");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Permissionid).HasColumnName("permissionid");
-            entity.Property(e => e.Roleid).HasColumnName("roleid");
+            entity.Property(e => e.PermissionId).HasColumnName("permissionid");
+            entity.Property(e => e.RoleId).HasColumnName("roleid");
 
             entity.HasOne(d => d.Permission).WithMany(p => p.Rolepermissions)
-                .HasForeignKey(d => d.Permissionid)
+                .HasForeignKey(d => d.PermissionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("rolepermissions_permissionid_fkey");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Rolepermissions)
-                .HasForeignKey(d => d.Roleid)
+                .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("rolepermissions_roleid_fkey");
         });
@@ -410,7 +410,7 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(150)
                 .HasColumnName("email");
-            entity.Property(e => e.Fullname)
+            entity.Property(e => e.FullName)
                 .HasMaxLength(150)
                 .HasColumnName("fullname");
             entity.Property(e => e.Passwordhash)
@@ -433,11 +433,11 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Address)
                 .HasMaxLength(255)
                 .HasColumnName("address");
-            entity.Property(e => e.Birthdate).HasColumnName("birthdate");
+            entity.Property(e => e.BirthDate).HasColumnName("birthdate");
             entity.Property(e => e.Gender)
                 .HasMaxLength(10)
                 .HasColumnName("gender");
-            entity.Property(e => e.Phonenumber)
+            entity.Property(e => e.PhoneNumber)
                 .HasMaxLength(50)
                 .HasColumnName("phonenumber");
 
@@ -454,16 +454,16 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.ToTable("userroles");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Roleid).HasColumnName("roleid");
-            entity.Property(e => e.Userid).HasColumnName("userid");
+            entity.Property(e => e.RoleId).HasColumnName("roleid");
+            entity.Property(e => e.UserId).HasColumnName("userid");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Userroles)
-                .HasForeignKey(d => d.Roleid)
+                .HasForeignKey(d => d.RoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("userroles_roleid_fkey");
 
             entity.HasOne(d => d.User).WithMany(p => p.Userroles)
-                .HasForeignKey(d => d.Userid)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("userroles_userid_fkey");
         });
