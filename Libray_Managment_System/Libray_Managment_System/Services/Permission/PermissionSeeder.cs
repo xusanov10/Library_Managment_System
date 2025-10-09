@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Libray_Managment_System.Enum;
+﻿using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
 
 namespace Libray_Managment_System.Data
@@ -13,9 +12,9 @@ namespace Libray_Managment_System.Data
             _context = context;
         }
 
-        public  void SeedPermissionsAsync()
+        public void SeedPermissionsAsync()
         {
-            var exists =  _context.Permissions.Any();
+            var exists = _context.Permissions.Any();
             if (exists)
                 return;
 
@@ -30,8 +29,8 @@ namespace Libray_Managment_System.Data
                 });
             }
 
-             _context.Permissions.AddRange(toAdd);
-             _context.SaveChanges();
+            _context.Permissions.AddRange(toAdd);
+            _context.SaveChanges();
         }
     }
 }

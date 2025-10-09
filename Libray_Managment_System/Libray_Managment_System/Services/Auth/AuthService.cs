@@ -2,11 +2,6 @@
 using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Libray_Managment_System.Services.Auth
 {
