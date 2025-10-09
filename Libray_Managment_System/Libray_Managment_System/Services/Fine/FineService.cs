@@ -5,16 +5,21 @@ namespace Libray_Managment_System.Services.Fine
     public class FineService
     {
         private readonly LibraryManagmentSystemContext _context;
-        public FineService(LibraryManagmentSystemContext context) => _context = context;
+        public FineService(LibraryManagmentSystemContext context)
+        {
+            _context = context;
+        }
 
 
         public async Task<int> CalculateFineAsync(int borrowId)
         {
             var borrow = await _context.Borrowrecords.FindAsync(borrowId);
 
-            if (borrow is null) throw new Exception();
+            if (borrow is null)
+                throw new Exception();
 
-            if (borrow.Duedate > DateTime.Now) return 0;
+            if (borrow.Duedate > DateTime.Now) 
+                return 0;
 
             TimeSpan diff = DateTime.Now - borrow.Duedate;
 
@@ -24,7 +29,8 @@ namespace Libray_Managment_System.Services.Fine
         public async Task<FineDto> CreateFineAsync(int borrowId)
         {
             var fineAmount = await CalculateFineAsync(borrowId);
-            if (fineAmount == 0) throw new Exception("Jarima yo'q");
+            if (fineAmount == 0)
+                throw new Exception("No Fine");
 
             var borrow = await _context.Borrowrecords.FindAsync(borrowId);
             var fine = new Fine
@@ -57,7 +63,7 @@ namespace Libray_Managment_System.Services.Fine
             }
             catch (Exception ex)
             {
-                throw new Exception("Foydalanuvchi jarimalarini olishda xatolik: " + ex.Message);
+                throw new Exception("Error fetching  user fines: " + ex.Message);
             }
         }
     }
