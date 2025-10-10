@@ -1,10 +1,13 @@
-﻿namespace Library_Managment_System.Services.Payment
+﻿using Library_Managment_System.DTOModels;
+using Libray_Managment_System.Services;
+
+namespace Library_Managment_System.Services.Payment
 {
     public interface IPaymentService
     {
-        Task MakePaymentAsync(PaymentDto dto);
-        Task<List<PaymentResponseDto>> GetUserPaymentsAsync(int userId);
-        Task<PaymentResponseDto> GetPaymentByIdAsync(int paymentId);
-        Task<List<PaymentResponseDto>> GetUnpaidFinesPaymentsAsync(int userId);
+        Task<Result<string>> MakePaymentAsync(PaymentDTO dto);
+        Task<Result<List<PaymentResponseDTO>>> GetUserPaymentsAsync(int userId);
+        Task<Result<PaymentResponseDTO>> GetPaymentByIdAsync(int paymentId);
+        Task<Result<List<PaymentResponseDTO>>> GetUnpaidFinesPaymentsAsync(int userId);
     }
 }

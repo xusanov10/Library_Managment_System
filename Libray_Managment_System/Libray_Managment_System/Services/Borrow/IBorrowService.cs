@@ -5,9 +5,9 @@ namespace Libray_Managment_System.Services.Borrow
 {
     public interface IBorrowService
     {
-        Task<BorrowResponseDTO> BorrowBookAsync(BorrowDTO dto);
-        Task<bool> ReturnBookAsync(int borrowId);
-        Task<List<BorrowResponseDTO>> GetUserBorrowsAsync(int userId);
-        Task<List<BorrowResponseDTO>> GetOverdueBorrowsAsync();
+        Task<Result<BorrowResponseDTO>> BorrowBookAsync(BorrowDTO dto);
+        Task<Result<bool>> ReturnBookAsync(int borrowId);
+        Task<Result<List<BorrowResponseDTO>>> GetUserBorrowsAsync(int userId);
+        Task<Result<List<BorrowResponseDTO>>> GetOverdueBorrowsAsync();
     }
 }
