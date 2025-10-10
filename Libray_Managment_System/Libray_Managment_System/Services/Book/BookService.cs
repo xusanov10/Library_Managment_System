@@ -17,7 +17,7 @@ public class BookService : IBookService
     // Kitob qo‘shish
     public async Task AddBookAsync(BookDTO dto)
     {
-        var entity = new Book
+        var entity = new Book 
         {
             Title = dto.Title,
             Isbn = dto.ISBN,
