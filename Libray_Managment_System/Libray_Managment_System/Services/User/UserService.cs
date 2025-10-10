@@ -1,4 +1,5 @@
 ﻿using Library_Management_System.Services;
+using Library_Managment_System;
 using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
@@ -17,7 +18,7 @@ public class UserService : IUserService
         _context = context;
     }
 
-   /* public async Task<Result> CreateUserProfileAsync(CreateUserProfileDTO dto)
+    public async Task<Result> CreateUserProfileAsync(CreateUserProfileDTO dto)
     {
         // Foydalanuvchi mavjudligini tekshirish
         var userExists = await _context.Users.AnyAsync(x => x.Id == dto.UserId);
@@ -65,7 +66,7 @@ public class UserService : IUserService
             }
 
             // Fayl URL ni olamiz
-            profilePictureUrl = uploadResult.Value;
+            profilePictureUrl = uploadResult.Data;
         }
 
         // ✅ Profil yaratish
@@ -88,7 +89,8 @@ public class UserService : IUserService
             StatusCode = 201,
         };
     }
-*/
+
+
     // Barcha foydalanuvchilarni olish
     public async Task<Result<IEnumerable<UserDTO>>> GetAllUsersAsync()
     {

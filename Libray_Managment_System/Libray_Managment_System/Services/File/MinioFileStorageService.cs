@@ -1,9 +1,11 @@
 ﻿
-using Libray_Managment_System.Models;
+using Library_Managment_System.Services;
+using Libray_Managment_System.Services;
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
+using static System.Net.WebRequestMethods;
 
 public class MinioFileStorageService : IFileStorageService
 {
@@ -17,7 +19,7 @@ public class MinioFileStorageService : IFileStorageService
         _minioSettings = minioSettings.Value;
     }
 
-    public async Task<string> UploadFileAsync(string bucketName, string objectName, Stream data, string contentType)
+    public async Task<Result<string>> UploadFileAsync(string bucketName, string objectName, Stream data, string contentType)
     {
         try
         {
@@ -46,7 +48,12 @@ public class MinioFileStorageService : IFileStorageService
             // Yuklangan faylga to'g'ridan-to'g'ri kirish URL'ini qaytarish
             // Bu URL Minio serverining manzili va bucket/object nomini o'z ichiga oladi.
             // Masalan: http://localhost:9000/my-bucket/my-image.jpg
-            return $"http://{_minioSettings.Endpoint}/{bucketName}/{objectName}";
+            return new Result<string>
+            {
+                Data = $"http://{_minioSettings.Endpoint}/{bucketName}/{objectName}",
+                StatusCode = 200,
+                Message = "File upload"
+            };
         }
         catch (MinioException e) // Minio'dan kelgan xatoliklarni qayd etish
         {
@@ -60,7 +67,7 @@ public class MinioFileStorageService : IFileStorageService
         }
     }
 
-    public async Task<Stream> DownloadFileAsync(string bucketName, string objectName)
+    public async Task<Result<Stream>> DownloadFileAsync(string bucketName, string objectName)
     {
         try
         {
@@ -76,7 +83,12 @@ public class MinioFileStorageService : IFileStorageService
             ).ConfigureAwait(false);
 
             memoryStream.Position = 0; // Streamni boshiga qaytarish, chunki undan o'qish mumkin bo'lishi uchun
-            return memoryStream;
+            return new Result<Stream>
+            {
+                Data = memoryStream,
+                StatusCode = 201,
+                Message = "File Download successfully!"
+            };
         }
         catch (MinioException e)
         {
@@ -85,7 +97,7 @@ public class MinioFileStorageService : IFileStorageService
         }
     }
 
-    public async Task<bool> FileExistsAsync(string bucketName, string objectName)
+    public async Task<Result<bool>> FileExistsAsync(string bucketName, string objectName)
     {
         try
         {
@@ -95,11 +107,20 @@ public class MinioFileStorageService : IFileStorageService
                     .WithBucket(bucketName)
                     .WithObject(objectName)
             ).ConfigureAwait(false);
-            return true; // Fayl mavjud
+            return new Result<bool>
+            {
+                Data = true,
+                StatusCode = 200,
+            }; // Fayl mavjud
         }
         catch (MinioException e) when (e.Message.Contains("Object does not exist")) // Fayl topilmaganligini aniqlash
         {
-            return false; // Fayl mavjud emas
+            return new Result<bool>
+            {
+                Data = false,
+                StatusCode = 501,
+                Message = e.Message
+            }; // Fayl mavjud emas
         }
         catch (Exception) // Boshqa har qanday xato
         {
@@ -108,7 +129,7 @@ public class MinioFileStorageService : IFileStorageService
     }
 
 
-    public async Task<bool> RemoveFileAsync(string bucketName, string objectName)
+    public async Task<Result<bool>> RemoveFileAsync(string bucketName, string objectName)
     {
         try
         {
@@ -117,7 +138,13 @@ public class MinioFileStorageService : IFileStorageService
                     .WithBucket(bucketName)
                     .WithObject(objectName)
             ).ConfigureAwait(false);
-            return true;
+
+            return new Result<bool>
+            {
+                Data = true,
+                StatusCode = 201,
+                Message = "File deleted successfully!"
+            };
         }
         catch (MinioException e)
         {
@@ -126,13 +153,20 @@ public class MinioFileStorageService : IFileStorageService
         }
     }
 
-    public async Task<bool> BucketExistsAsync(string bucketName)
+    public async Task<Result<bool>> BucketExistsAsync(string bucketName)
     {
         try
         {
-            return await _minioClient.BucketExistsAsync(
+            var resutl = await _minioClient.BucketExistsAsync(
                 new BucketExistsArgs().WithBucket(bucketName)
             ).ConfigureAwait(false);
+
+            return new Result<bool>
+            {
+                Data = true,
+                StatusCode = 201,
+                Message = "bucket sucsess"
+            };
         }
         catch (MinioException e)
         {

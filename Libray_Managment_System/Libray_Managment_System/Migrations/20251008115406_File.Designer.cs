@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Libray_Managment_System.Migrations
 {
     [DbContext(typeof(LibraryManagmentSystemContext))]
-    [Migration("20251001111302_RoleValue")]
-    partial class RoleValue
+    [Migration("20251008115406_File")]
+    partial class File
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -652,6 +652,11 @@ namespace Libray_Managment_System.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("phonenumber");
+
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("profile_picture_url");
 
                     b.HasKey("Id")
                         .HasName("userprofiles_pkey");
