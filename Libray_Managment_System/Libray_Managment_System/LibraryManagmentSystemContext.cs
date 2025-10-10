@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Libray_Managment_System.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace Libray_Managment_System.Models;
+namespace Library_Managment_System;
 
 public partial class LibraryManagmentSystemContext : DbContext
 {
@@ -54,7 +55,8 @@ public partial class LibraryManagmentSystemContext : DbContext
             .HasPostgresEnum("bookcopystatus", new[] { "Available", "Borrowed", "Reserved", "Lost" })
             .HasPostgresEnum("borrowstatus", new[] { "Borrowed", "Returned", "Overdue" })
             .HasPostgresEnum("reporttype", new[] { "Daily", "Monthly", "Yearly", "Custom" })
-            .HasPostgresEnum("reservationstatus", new[] { "Pending", "Approved", "Cancelled" });
+            .HasPostgresEnum("reservationstatus", new[] { "Pending", "Approved", "Cancelled" })
+            .HasPostgresEnum("gendertype", new[] { "Mail", "Female" });
 
         modelBuilder.Entity<Author>(entity =>
         {
@@ -244,6 +246,8 @@ public partial class LibraryManagmentSystemContext : DbContext
 
         modelBuilder.Entity<Payment>(entity =>
         {
+
+
             entity.HasKey(e => e.Id).HasName("payments_pkey");
 
             entity.ToTable("payments");
@@ -419,62 +423,70 @@ public partial class LibraryManagmentSystemContext : DbContext
             entity.Property(e => e.Status)
                 .HasDefaultValue(true)
                 .HasColumnName("status");
+
+            modelBuilder.Entity<Userprofile>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("userprofiles_pkey");
+
+                entity.ToTable("userprofiles");
+
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.Address)
+                    .HasMaxLength(255)
+                    .HasColumnName("address");
+                entity.Property(e => e.Birthdate).HasColumnName("birthdate");
+                entity.Property(e => e.Gender)
+                    .HasMaxLength(10)
+                    .HasColumnName("gender");
+                entity.Property(e => e.Phonenumber)
+                    .HasMaxLength(50)
+                    .HasColumnName("phonenumber");
+
+                entity.HasOne(d => d.IdNavigation).WithOne(p => p.Userprofile)
+                    .HasForeignKey<Userprofile>(d => d.Id)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("userprofiles_id_fkey");
+                entity.Property(e => e.ProfilePictureUrl)
+                    .HasMaxLength(255)
+                    .HasColumnName("profile_picture_url");
+                entity.Property(e => e.Gender)
+                      .HasConversion<string>()
+                      .HasMaxLength(10)
+                      .IsUnicode(false)
+                      .HasColumnName("gender");
+            });
+
+            modelBuilder.Entity<Userrole>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("userroles_pkey");
+
+                entity.ToTable("userroles");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Roleid).HasColumnName("roleid");
+                entity.Property(e => e.Userid).HasColumnName("userid");
+
+                entity.HasOne(d => d.Role).WithMany(p => p.Userroles)
+                    .HasForeignKey(d => d.Roleid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("userroles_roleid_fkey");
+
+                entity.HasOne(d => d.User).WithMany(p => p.Userroles)
+                    .HasForeignKey(d => d.Userid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("userroles_userid_fkey");
+            });
+
+            modelBuilder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = "Student", Description = "Default role for students" },
+                new Role { Id = 2, Name = "Moderator", Description = "Moderator role with limited management rights" },
+                new Role { Id = 3, Name = "Admin", Description = "Administrator role with full permissions" }
+            );
+
+            OnModelCreatingPartial(modelBuilder);
         });
-
-        modelBuilder.Entity<Userprofile>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("userprofiles_pkey");
-
-            entity.ToTable("userprofiles");
-
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.Address)
-                .HasMaxLength(255)
-                .HasColumnName("address");
-            entity.Property(e => e.Birthdate).HasColumnName("birthdate");
-            entity.Property(e => e.Gender)
-                .HasMaxLength(10)
-                .HasColumnName("gender");
-            entity.Property(e => e.Phonenumber)
-                .HasMaxLength(50)
-                .HasColumnName("phonenumber");
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Userprofile)
-                .HasForeignKey<Userprofile>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("userprofiles_id_fkey");
-        });
-
-        modelBuilder.Entity<Userrole>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("userroles_pkey");
-
-            entity.ToTable("userroles");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Roleid).HasColumnName("roleid");
-            entity.Property(e => e.Userid).HasColumnName("userid");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.Userroles)
-                .HasForeignKey(d => d.Roleid)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("userroles_roleid_fkey");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Userroles)
-                .HasForeignKey(d => d.Userid)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("userroles_userid_fkey");
-        });
-
-        modelBuilder.Entity<Role>().HasData(
-            new Role { Id = 1, Name = "Student", Description = "Default role for students" },
-            new Role { Id = 2, Name = "Moderator", Description = "Moderator role with limited management rights" },
-            new Role { Id = 3, Name = "Admin", Description = "Administrator role with full permissions" }
-        );
-
-        OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

@@ -1,4 +1,5 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using Library_Managment_System;
+using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
@@ -33,9 +34,6 @@ namespace Libray_Managment_System.Services.Auth
                 Status = true,
                 Createdat = DateTime.UtcNow
             };
-
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
 
             var studentRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Student");
             if (studentRole != null)

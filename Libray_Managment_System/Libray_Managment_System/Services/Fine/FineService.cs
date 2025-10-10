@@ -1,4 +1,6 @@
-﻿using Libray_Managment_System.Models;
+﻿using Library_Managment_System.DTOModels;
+using Libray_Managment_System.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Libray_Managment_System.Services.Fine
 {
@@ -26,37 +28,38 @@ namespace Libray_Managment_System.Services.Fine
             return diff.Days * 1000;
         }
 
-        public async Task<FineDto> CreateFineAsync(int borrowId)
+        public async Task<FineDTO> CreateFineAsync(int borrowId)
         {
             var fineAmount = await CalculateFineAsync(borrowId);
             if (fineAmount == 0)
                 throw new Exception("No Fine");
 
             var borrow = await _context.Borrowrecords.FindAsync(borrowId);
-            var fine = new Fine
+            var fine = new Models.Fine
             {
-                UserId = borrow.Userid,
-                BorrowrecordId = borrowId,
+                Userid = borrow.Userid,
+                Borrowrecordid = borrowId,
                 Amount = fineAmount,
-                Paid = false
+                Paid = false,
+                Createdat = DateTime.UtcNow
             };
             _context.Fines.Add(fine);
             await _context.SaveChangesAsync();
 
 
-            return new FineDto { Id = fine.Id, UserId = fine.UserId, BorrowRecordId = fine.BorrowrecordId, Amount = fine.Amount, Paid = fine.Paid ?? false };
+            return new FineDTO { Id = fine.Id, UserId = fine.Userid, BorrowRecordId = fine.Borrowrecordid, Amount = fine.Amount, Paid = fine.Paid ?? false };
         }
 
-        public async Task<List<FineDto>> GetUserFinesAsync(int userId)
+        public async Task<List<FineDTO>> GetUserFinesAsync(int userId)
         {
             try
             {
-                var fines = await _context.Fines.Where(f => f.UserId == userId).ToListAsync();
-                return fines.Select(f => new FineDto
+                var fines = await _context.Fines.Where(f => f.Userid == userId).ToListAsync();
+                return fines.Select(f => new FineDTO
                 {
                     Id = f.Id,
-                    UserId = f.UserId,
-                    BorrowRecordId = f.BorrowrecordId,
+                    UserId = f.Userid,
+                    BorrowRecordId = f.Borrowrecordid,
                     Amount = f.Amount,
                     Paid = f.Paid ?? false
                 }).ToList();

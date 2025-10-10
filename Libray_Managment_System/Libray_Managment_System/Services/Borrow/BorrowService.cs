@@ -1,4 +1,6 @@
-﻿using Libray_Managment_System.Enum;
+﻿using Library_Managment_System.DTOModels;
+using Libray_Managment_System.DtoModels;
+using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +15,7 @@ namespace Libray_Managment_System.Services.Borrow
             _context = context;
         }
 
-        public async Task<BorrowResponseDto> BorrowBookAsync(BorrowDto dto)
+        public async Task<BorrowResponseDTO> BorrowBookAsync(BorrowDTO dto)
         {
             var copy = await _context.Bookcopies.FindAsync(dto.BookCopyId);
             if (copy == null || copy.Status != BookCopyStatus.Available)
@@ -28,18 +30,17 @@ namespace Libray_Managment_System.Services.Borrow
                 Userid = dto.UserId,
                 Bookcopyid = dto.BookCopyId,
                 Borrowdate = DateTime.UtcNow,
-                Duedate = dto.Duedate,
+                Duedate = DateTime.UtcNow.AddDays(14),
                 Status = BorrowStatus.Borrowed
             };
 
             _context.Borrowrecords.Add(record);
             await _context.SaveChangesAsync();
 
-            return new BorrowResponseDto
+            return new BorrowResponseDTO
             {
                 BorrowRecordId = record.Id,
                 UserId = record.Userid,
-                BookCopyId = record.Bookcopyid,
                 BorrowDate = record.Borrowdate.Value,
                 DueDate = record.Duedate,
                 Status = record.Status
@@ -67,12 +68,12 @@ namespace Libray_Managment_System.Services.Borrow
             return true;
         }
 
-        public async Task<List<BorrowResponseDto>> GetUserBorrowsAsync(int userId)
+        public async Task<List<BorrowResponseDTO>> GetUserBorrowsAsync(int userId)
         {
             try
             {
                 var records = await _context.Borrowrecords.Where(b => b.Userid == userId).ToListAsync();
-                return records.Select(r => new BorrowResponseDto
+                return records.Select(r => new BorrowResponseDTO
                 {
                     BorrowRecordId = r.Id,
                     UserId = r.Userid,
@@ -88,14 +89,14 @@ namespace Libray_Managment_System.Services.Borrow
             }
         }
 
-        public async Task<List<BorrowResponseDto>> GetOverdueBorrowsAsync()
+        public async Task<List<BorrowResponseDTO>> GetOverdueBorrowsAsync()
         {
             try
             {
                 var records = await _context.Borrowrecords
                     .Where(b => b.Status == BorrowStatus.Borrowed && b.Duedate < DateTime.UtcNow)
                     .ToListAsync();
-                return records.Select(r => new BorrowResponseDto
+                return records.Select(r => new BorrowResponseDTO
                 {
                     BorrowRecordId = r.Id,
                     UserId = r.Userid,
