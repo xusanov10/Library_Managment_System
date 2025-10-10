@@ -1,5 +1,6 @@
 ﻿using Library_Management_System.Services;
 using Library_Managment_System;
+using Library_Managment_System1;
 using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
@@ -40,7 +41,7 @@ public class UserService : IUserService
 
         string? profilePictureUrl = null;
 
-        // 📸 Agar rasm yuborilgan bo‘lsa — MinIO ga yuklash
+        // Agar rasm yuborilgan bo‘lsa — MinIO ga yuklash
         if (dto.ProfilePicture != null)
         {
             var bucketName = "user-profile-pictures";
