@@ -4,7 +4,11 @@ namespace Library_Managment_System.DTOModels
 {
     public class BorrowDTO
     {
-        public int UserId { get; set; }       
-        public int BookCopyId { get; set; }   
+        [Required(ErrorMessage = "UserId majburiy")]
+        public int UserId { get; set; }
+        [Required(ErrorMessage = "BookCopyId majburiy")]
+        public int BookCopyId { get; set; }
+        [Required(ErrorMessage = "DueDate majburiy")]
+        public DateTime Duedate { get; set; }
     }
 }
