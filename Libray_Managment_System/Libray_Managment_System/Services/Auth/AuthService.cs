@@ -1,12 +1,8 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using Library_Managment_System;
+using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.DTOModels;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Libray_Managment_System.Services.Auth
 {
@@ -21,11 +17,11 @@ namespace Libray_Managment_System.Services.Auth
             _tokenService = tokenService;
         }
 
-        public async Task<ResultDTO> RegisterUserAsync(RegisterDTO dto)
+        public async Task<Result> RegisterUserAsync(RegisterDTO dto)
         {
             var exists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
             if (exists)
-                return new ResultDTO<string>
+                return new Result<string>
                 {
                     Message = "Email already in use!",
                     StatusCode = 400,
@@ -39,9 +35,6 @@ namespace Libray_Managment_System.Services.Auth
                 Createdat = DateTime.UtcNow
             };
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
             var studentRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Student");
             if (studentRole != null)
             {
@@ -54,18 +47,18 @@ namespace Libray_Managment_System.Services.Auth
                 await _context.SaveChangesAsync();
             }
 
-            return new ResultDTO
+            return new Result
             {
                 Message = "User registered successfully!",
                 StatusCode = 201
             };
         }
 
-        public async Task<ResultDTO<string>> LoginUserAsync(LoginDTO dto)
+        public async Task<Result<string>> LoginUserAsync(LoginDTO dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Passwordhash))
-                return new ResultDTO<string>
+                return new Result<string>
                 {
                     Message = "Invalid email or password!",
                     StatusCode = 401,
@@ -73,7 +66,7 @@ namespace Libray_Managment_System.Services.Auth
 
                 };
             var token = _tokenService.GenerateToken(user);
-            return new ResultDTO<string>
+            return new Result<string>
             {
                 Message = "Login successful!",
                 StatusCode = 200,

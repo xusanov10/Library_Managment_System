@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Libray_Managment_System.DTOModels
+namespace Libray_Managment_System.Services
 {
-    public class ResultDTO : IActionResult
+    public class Result : IActionResult
     {
         public string? Message { get; set; }
         public int StatusCode { get; set; }
@@ -11,13 +11,13 @@ namespace Libray_Managment_System.DTOModels
         {
             JsonResult result = new JsonResult(this)
             {
-                StatusCode = this.StatusCode
+                StatusCode = StatusCode
             };
             await result.ExecuteResultAsync(context);
         }
     }
 
-    public class ResultDTO<T> : ResultDTO
+    public class Result<T> : Result
     {
         public T Data { get; set; }
     }

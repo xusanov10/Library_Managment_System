@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Library_Managment_System.Enum;
+using System;
 using System.Collections.Generic;
 
 namespace Libray_Managment_System.Models;
@@ -13,7 +14,9 @@ public partial class Userprofile
 
     public DateOnly? Birthdate { get; set; }
 
-    public string? Gender { get; set; }
+    public string? ProfilePictureUrl { get; set; } // MinIO URL
+
+    public GenderEnum? Gender { get; set; } 
 
     public virtual User IdNavigation { get; set; } = null!;
 }
