@@ -23,6 +23,7 @@ namespace Library_Managment_System.Services.FineSer
             if (borrow.Duedate > DateTime.Now)
             {
                 result.Data = 0;
+
                 return result;
             }
             TimeSpan diff = DateTime.Now - borrow.Duedate;
