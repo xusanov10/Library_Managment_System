@@ -42,11 +42,21 @@ public class FilesController : ControllerBase
 
         try
         {
-            var stream = await _fileStorageService.DownloadFileAsync(bucketName, objectName);
+            // Faylni storage dan yuklab olishga urinish
+            var result = await _fileStorageService.DownloadFileAsync(bucketName, objectName);
+
+            // Agar yuklab olinmasa yoki fayl topilmasa
+            if (result.StatusCode != 200 || result.Data == null)
+                return NotFound(result.Message ?? "Fayl topilmadi.");
+
+            var stream = result.Data; // Stream obyektni olish
+
             // Content-Type ni aniqlashga harakat qilish yoki universal qiymat berish
             var contentType = "application/octet-stream"; // Fayl turi noma'lum bo'lsa
                                                           // Agar siz fayl turini saqlagan bo'lsangiz, uni bazadan olib foydalansangiz yaxshi bo'ladi
-            return File(stream, contentType, objectName); // Faylni brauzerga jo'natish
+
+            // Faylni brauzerga jo'natish
+            return File(stream, contentType, objectName);
         }
         catch (Minio.Exceptions.MinioException e) when (e.Message.Contains("Object does not exist"))
         {
@@ -54,6 +64,7 @@ public class FilesController : ControllerBase
         }
         catch (Exception)
         {
+            // Kutilmagan xatoliklar uchun
             return StatusCode(500, "Faylni yuklab olishda kutilmagan xatolik yuz berdi.");
         }
     }
@@ -68,15 +79,21 @@ public class FilesController : ControllerBase
 
         try
         {
-            bool removed = await _fileStorageService.RemoveFileAsync(bucketName, objectName);
-            if (removed)
+            // Faylni o‘chirishga urinish
+            var result = await _fileStorageService.RemoveFileAsync(bucketName, objectName);
+
+            // Agar o‘chirish muvaffaqiyatli bo‘lsa
+            if (result.Data)
             {
-                return Ok("Fayl muvaffaqiyatli o'chirildi.");
+                return Ok(result.Message ?? "Fayl muvaffaqiyatli o'chirildi.");
             }
-            return NotFound("Fayl topilmadi yoki o'chirishda muammo yuz berdi.");
+
+            // Aks holda fayl topilmadi yoki o‘chirishda muammo bo‘lgan
+            return NotFound(result.Message ?? "Fayl topilmadi yoki o‘chirishda muammo yuz berdi.");
         }
         catch (Exception)
         {
+            // Kutilmagan xatoliklar uchun
             return StatusCode(500, "Faylni o'chirishda kutilmagan xatolik yuz berdi.");
         }
     }
