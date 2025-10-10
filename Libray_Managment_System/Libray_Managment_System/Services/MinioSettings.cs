@@ -1,4 +1,4 @@
-﻿namespace Libray_Managment_System.Models
+﻿namespace Library_Managment_System.Services
 {
     public class MinioSettings
     {
