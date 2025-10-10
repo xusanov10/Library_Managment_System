@@ -1,7 +1,7 @@
 ﻿using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Library_Managment_System;
+namespace Library_Managment_System1;
 
 public class LibraryManagmentSystemContext : DbContext
 {
@@ -485,5 +485,8 @@ public class LibraryManagmentSystemContext : DbContext
         });
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    void OnModelCreatingPartial(ModelBuilder modelBuilder)
+    {
+
+    }
 }

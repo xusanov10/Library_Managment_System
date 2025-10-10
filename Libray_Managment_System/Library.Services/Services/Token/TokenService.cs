@@ -1,8 +1,6 @@
-﻿using Library_Managment_System;
-using Libray_Managment_System.DtoModels;
-using Libray_Managment_System.DTOModels;
+﻿using Library_Managment_System1;
 using Libray_Managment_System.Models;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

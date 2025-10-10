@@ -1,7 +1,7 @@
 ﻿using Library_Managment_System;
 using Library_Managment_System.DTOModels;
 using Microsoft.EntityFrameworkCore;
-
+using Library_Managment_System1;
 namespace Libray_Managment_System.Services.Fine
 {
     public class FineService
