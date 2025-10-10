@@ -9,39 +9,60 @@ namespace Library_Managment_System.Services.FineSer
     {
         private readonly LibraryManagmentSystemContext _context;
         public FineService(LibraryManagmentSystemContext context) => _context = context;
-        public async Task<int> CalculateFineAsync(int borrowId)
+        public async Task<ResultDTO<int>> CalculateFineAsync(int borrowId)
         {
+            var result = new ResultDTO<int>()
+            {
+                Message = "Fine calculated successfully",
+                StatusCode = 200
+            };
+
             var borrow = await _context.Borrowrecords.FindAsync(borrowId);
             if (borrow is null)
                 throw new Exception("Borrow record not found");
             if (borrow.Duedate > DateTime.Now)
-                return 0;
+            {
+                result.Data = 0;
+                return result;
+            }
             TimeSpan diff = DateTime.Now - borrow.Duedate;
-            return diff.Days * 1000;
+            result.Data =  diff.Days * 1000;
+            return result;
         }
-        public async Task<FineDto> CreateFineAsync(int borrowId)
+        public async Task<ResultDTO<FineDto>> CreateFineAsync(int borrowId)
         {
+            var result = new ResultDTO<FineDto>()
+            {
+                Message = "Fine created successfully",
+                StatusCode = 200
+            };
             var fineAmount = await CalculateFineAsync(borrowId);
-            if (fineAmount == 0)
+            if (fineAmount.Data == 0)
                 throw new Exception("No fine");
             var borrow = await _context.Borrowrecords.FindAsync(borrowId);
             var fine = new Fine
             {
                 UserId = borrow.UserId,
                 BorrowRecordId = borrowId,
-                Amount = fineAmount,
+                Amount = fineAmount.Data,
                 Paid = false
             };
             _context.Fines.Add(fine);
             await _context.SaveChangesAsync();
-            return new FineDto { Id = fine.Id, UserId = fine.UserId, BorrowRecordId = fine.BorrowRecordId, Amount = fine.Amount, Paid = fine.Paid ?? false };
+            result.Data = new FineDto { Id = fine.Id, UserId = fine.UserId, BorrowRecordId = fine.BorrowRecordId, Amount = fine.Amount, Paid = fine.Paid ?? false };
+            return result;
         }
-        public async Task<List<FineDto>> GetUserFinesAsync(int userId)
+        public async Task<ResultDTO<List<FineDto>>> GetUserFinesAsync(int userId)
         {
+            var result = new ResultDTO<List<FineDto>>()
+            {
+                Message = "User fines fetched successfully",
+                StatusCode = 200
+            };
             try
             {
                 var fines = await _context.Fines.Where(f => f.UserId == userId).ToListAsync();
-                return fines.Select(f => new FineDto
+                 result.Data =  fines.Select(f => new FineDto
                 {
                     Id = f.Id,
                     UserId = f.UserId,
@@ -54,6 +75,7 @@ namespace Library_Managment_System.Services.FineSer
             {
                 throw new Exception("Error fetching user fines: " + ex.Message);
             }
+            return result;
         }
     }
 
