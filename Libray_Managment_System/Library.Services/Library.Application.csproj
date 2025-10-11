@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Library.Data\Library.Data.csproj" />
+    <ProjectReference Include="..\Library.Data\Library.DataAccess.csproj" />
     <ProjectReference Include="..\Library.Entity\Library.Domain.csproj" />
     <ProjectReference Include="..\Library.ViewModel\Library.ViewModel.csproj" />
   </ItemGroup>
