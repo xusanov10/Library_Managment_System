@@ -1,9 +1,10 @@
-﻿using Library_Managment_System1;
+﻿using Library_Managment_System;
 using Library_Managment_System.DTOModels;
 using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
+using Library_Managment_System1;
 
 namespace Libray_Managment_System.Services.Borrow
 {
@@ -60,14 +61,10 @@ namespace Libray_Managment_System.Services.Borrow
             record.Returndate = DateTime.UtcNow;
 
             var copy = await _context.Bookcopies.FindAsync(record.Bookcopyid);
-
             if (copy != null)
             {
                 copy.Status = BookCopyStatus.Available;
             }
-
-
-
 
             await _context.SaveChangesAsync();
             return true;

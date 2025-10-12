@@ -1,0 +1,46 @@
+[33m58c1774[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mAhmadjon'sNextBranch[m[33m, [m[1;31morigin/Ahmadjon'sNextBranch[m[33m)[m created new entyti
+[33m4c56e27[m fgrh
+[33m0fbced1[m Changed architecture to N-Tire
+[33m42e0804[m Add new namespace and update HTTP handling features
+[33m59d10e6[m Refactor namespaces and update project structure
+[33m1e4512f[m Refactor and enhance library management system
+[33m82017ef[m Add new projects for Library Management System
+[33m0cb6dec[m[33m ([m[1;32mmain[m[33m)[m Merge pull request #15 from xusanov10/main
+[33m92edda9[m Merge branch 'main' of https://github.com/xusanov10/Library_Managment_System
+[33m82650bc[m Refactor DTOs and service methods for consistency
+[33m5ea422a[m Merge pull request #14 from xusanov10/Ahmadjon'sNextBranch
+[33mfdcd1e6[m flieControler
+[33m7b40421[m Merge branch 'main' of https://github.com/xusanov10/Library_Managment_System
+[33m7dbacf2[m mm
+[33m6764c51[m Merge pull request #13 from xusanov10/Ahmadjon'sNextBranch
+[33m0dd65f8[m Refactor UserService and update Minio settings
+[33m4ebf4cd[m whata
+[33m1216d84[m Fix project structure and enhance user profile handling
+[33medf02de[m Merge pull request #12 from xusanov10/Ahmadjon'sNextBranch
+[33m4ddd033[m created file upload and download
+[33m08eeb73[m Merge pull request #11 from xusanov10/Ahmadjon'sNextBranch
+[33m56c4e1a[m Refactor result handling with new Result class
+[33maeb82de[m Merge pull request #10 from xusanov10/Ahmadjon'sNextBranch
+[33me8ff057[m Merge pull request #9 from xusanov10/main
+[33m1428357[m Merge pull request #7 from xusanov10/MyNextBranch
+[33m3447e4c[m[33m ([m[1;31morigin/MyNextBranch[m[33m)[m Remove invalid login error message handling
+[33me15beea[m Refactor response handling with ResultDTO implementation
+[33m9ee402f[m Add role seeding, user controller, and connection updates
+[33m0305fed[m Add user update and role retrieval functionality
+[33m2292444[m Merge pull request #6 from xusanov10/MyNextBranch
+[33m3a5b064[m Add user profile management and role assignment
+[33m8f66961[m Merge pull request #3 from xusanov10/Ahmadjon'sNextBranch
+[33m840abb8[m Refactor API parameters and update date handling
+[33m55f5eaf[m Update .gitignore and modify appsettings configuration
+[33mf6a734d[m Add RoleController for role management endpoints
+[33m8de5bf2[m Add UpdatePermissionsAsync method for role management
+[33m87ac69f[m Add AuthController for user registration and login
+[33m89be39a[m Merge pull request #2 from xusanov10/Ahmadjon'sNextBranch
+[33mde1617f[m Remove unused namespace import in INotificationService
+[33md474971[m Add permission seeding and role management features
+[33m6884bc3[m[33m ([m[1;32mAhmadjon'sBrench[m[33m)[m AuthService, Notification, User
+[33m1966a5b[m Merge pull request #1 from xusanov10/Jasurbek
+[33m99bc920[m Refactor repository interfaces and update ReportService
+[33m83d6268[m Add DTOs, services, and controllers for core features
+[33mb2e2409[m[33m ([m[1;31morigin/Ahmadjon[m[33m, [m[1;32mAhmadjon[m[33m)[m Initial project setup for Library Management System
+[33m129c3be[m Initial commit
