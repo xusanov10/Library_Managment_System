@@ -60,6 +60,7 @@ namespace Libray_Managment_System.Services.Borrow
             record.Returndate = DateTime.UtcNow;
 
             var copy = await _context.Bookcopies.FindAsync(record.Bookcopyid);
+
             if (copy != null)
             {
                 copy.Status = BookCopyStatus.Available;
