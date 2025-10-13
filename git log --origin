@@ -1,0 +1,203 @@
+[33mcommit 25fd8603494ebc4214eb9de63cbf518bf69ab072[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 5ea422a 1d196c7
+Author: Ahmadjon <ahmadjonxusanovv@gmail.com>
+Date:   Fri Oct 10 17:50:24 2025 +0500
+
+    Merge pull request #19 from xusanov10/Doston2
+    
+    Services
+
+[33mcommit 1d196c77e5ffc64f75bc5c9c8667322777c31c58[m
+Author: bunyodov <d99795858@gmail.com>
+Date:   Fri Oct 10 17:48:43 2025 +0500
+
+    Fixed
+
+[33mcommit 4ae123fdb707b0022b899b9ce6c10ff258e056ae[m
+Merge: 76b8eb1 92edda9
+Author: bunyodov <d99795858@gmail.com>
+Date:   Fri Oct 10 15:34:04 2025 +0500
+
+    Merge branch 'main' of https://github.com/xusanov10/Library_Managment_System
+
+[33mcommit 92edda9d3f1349dee85d2def8dac2fa9c29deab5[m
+Merge: 82650bc 5ea422a
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Fri Oct 10 14:30:05 2025 +0500
+
+    Merge branch 'main' of https://github.com/xusanov10/Library_Managment_System
+
+[33mcommit 82650bc48bc5188038d6a8fec69cbecdc16c2dcf[m
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Fri Oct 10 14:29:56 2025 +0500
+
+    Refactor DTOs and service methods for consistency
+    
+    This commit introduces new DTO classes and renames existing ones for clarity, changing `BorrowDto` to `BorrowDTO` and `BorrowResponseDto` to `BorrowResponseDTO`.
+    
+    In `BorrowService.cs`, methods now utilize the updated DTOs, and the due date for borrowed books is set to 14 days from the current date.
+    
+    Similar updates are made in `FineService.cs`, where `FineDto` is renamed to `FineDTO`, and the `CreateFineAsync` method is adjusted accordingly.
+    
+    New DTO classes `PaymetDTO` and `PaymetResponseDTO` are added to improve data transfer organization.
+    
+    Interface definitions in `IBorrowService.cs` and `IFineService.cs` are updated to reflect the new naming conventions, ensuring consistency across the service contracts.
+    
+    Overall, these changes enhance code structure and clarity.
+
+[33mcommit 5ea422a4f44c6761848bb805d95db7ab702820d2[m
+Merge: 7b40421 fdcd1e6
+Author: Ahmadjon <ahmadjonxusanovv@gmail.com>
+Date:   Fri Oct 10 13:46:48 2025 +0500
+
+    Merge pull request #14 from xusanov10/Ahmadjon'sNextBranch
+    
+    flieControler
+
+[33mcommit fdcd1e696eee2f10be795bd14c8f6acdeeacdb36[m
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Fri Oct 10 13:44:30 2025 +0500
+
+    flieControler
+
+[33mcommit 76b8eb1af33bfd4ef1e0898b1920c67359f7fc0e[m
+Author: bunyodov <d99795858@gmail.com>
+Date:   Thu Oct 9 15:14:24 2025 +0500
+
+    intrfase va service qoshildi
+
+[33mcommit 7b40421b4a13f097677d223a75d6e13ea83088aa[m
+Merge: 7dbacf2 6764c51
+Author: bunyodov <d99795858@gmail.com>
+Date:   Thu Oct 9 14:52:39 2025 +0500
+
+    Merge branch 'main' of https://github.com/xusanov10/Library_Managment_System
+
+[33mcommit 7dbacf25d715e8ce3e9a93c35aafa054819adc2b[m
+Author: bunyodov <d99795858@gmail.com>
+Date:   Thu Oct 9 14:50:40 2025 +0500
+
+    mm
+
+[33mcommit 6764c51ff17b94269f7f6b84ac0de33210b22a60[m
+Merge: edf02de 0dd65f8
+Author: Ahmadjon <ahmadjonxusanovv@gmail.com>
+Date:   Mon Oct 6 20:48:34 2025 +0500
+
+    Merge pull request #13 from xusanov10/Ahmadjon'sNextBranch
+    
+    Ahmadjon's next branch
+
+[33mcommit 0dd65f840cb341df72945fbcf9076be65aaaa3cc[m
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Mon Oct 6 20:44:24 2025 +0500
+
+    Refactor UserService and update Minio settings
+    
+    Significantly modified the `UserService.cs` file by removing the `MinioFileStorageService` class and implementing a new `UserService` class that handles user management functionalities, including creating, retrieving, updating, and deleting user profiles. The new implementation uses `LibraryManagmentSystemContext` and a file storage service for profile pictures, along with several new DTOs for data handling.
+    
+    Updated the `appsettings.json` file to change the `SecretKey` field under `MinioSettings` from a boolean to a string for proper Minio client configuration.
+
+[33mcommit 4ebf4cda59f70cd49004282b2012a64376bb7e73[m
+Author: bunyodov <d99795858@gmail.com>
+Date:   Mon Oct 6 20:23:21 2025 +0500
+
+    whata
+
+[33mcommit 1216d84c553770ff93d32cf35f12810beaefc5ac[m
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Mon Oct 6 17:14:25 2025 +0500
+
+    Fix project structure and enhance user profile handling
+    
+    Updated project name in solution file and corrected formatting.
+    Added `ProfilePicture` and `ProfilePictureUrl` properties for
+    user profile management. Refactored result handling to use
+    generic `Result<T>` structure across services and interfaces.
+    Updated project file for .NET 8.0 compatibility and
+    implemented MinIO file handling for user profile pictures.
+
+[33mcommit edf02ded1bf1bf76123f1250957a636e2a454533[m
+Merge: 08eeb73 4ddd033
+Author: Ahmadjon <ahmadjonxusanovv@gmail.com>
+Date:   Mon Oct 6 10:17:38 2025 +0500
+
+    Merge pull request #12 from xusanov10/Ahmadjon'sNextBranch
+    
+    created file upload and download
+
+[33mcommit 4ddd033b6ebeea8dc36e8cb2cb16ae4bc446b0ff[m
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Mon Oct 6 10:16:46 2025 +0500
+
+    created file upload and download
+
+[33mcommit 08eeb73eff3630e7dffc8a2aafeaef4e41789a80[m
+Merge: aeb82de 56c4e1a
+Author: Ahmadjon <ahmadjonxusanovv@gmail.com>
+Date:   Fri Oct 3 19:27:43 2025 +0500
+
+    Merge pull request #11 from xusanov10/Ahmadjon'sNextBranch
+    
+    Refactor result handling with new Result class
+
+[33mcommit 56c4e1a7a6b41b9ae20b8c416360388b5e801451[m
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Fri Oct 3 19:25:08 2025 +0500
+
+    Refactor result handling with new Result class
+    
+    - Introduced a new `Result` class implementing `IActionResult` to streamline result handling.
+    - Updated `ResultDTO<T>` to inherit from `Result`.
+    - Changed return types in `AuthService`, `RoleService`, and `UserService` from `Task<ResultDTO>` to `Task<Result>`.
+    - Modified `IAuthService` and `IRoleService` interfaces to reflect the new return type.
+    - Adjusted methods in `UserService` to return `Result` with appropriate messages and status codes.
+    - Improved consistency across service methods by consolidating result types.
+
+[33mcommit aeb82decd4aade4984833c3debb9bf23e763e6f4[m
+Merge: 1428357 e8ff057
+Author: Ahmadjon <ahmadjonxusanovv@gmail.com>
+Date:   Fri Oct 3 18:33:16 2025 +0500
+
+    Merge pull request #10 from xusanov10/Ahmadjon'sNextBranch
+    
+    Merge pull request #9 from xusanov10/main
+
+[33mcommit e8ff057360236fd0346bcbbfe34be3c5e18706e3[m
+Merge: 840abb8 1428357
+Author: Ahmadjon <ahmadjonxusanovv@gmail.com>
+Date:   Fri Oct 3 18:32:11 2025 +0500
+
+    Merge pull request #9 from xusanov10/main
+    
+    Changed
+
+[33mcommit 1428357d417e5cd748dcfd4ea8f27a37ff44922d[m
+Merge: 2292444 3447e4c
+Author: xusanov10 <ahmadjonxusanovv@gmail.com>
+Date:   Wed Oct 1 19:10:52 2025 +0500
+
+    Merge pull request #7 from xusanov10/MyNextBranch
+    
+    My next branch
+
+[33mcommit 3447e4c51fdb9329a8db82407ce81c59bae9ee47[m[33m ([m[1;31morigin/MyNextBranch[m[33m)[m
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Wed Oct 1 19:10:04 2025 +0500
+
+    Remove invalid login error message handling
+    
+    This commit removes the error message return statement for invalid email or password attempts in the AuthService. The change modifies the error handling for login attempts, potentially streamlining the login process or altering how errors are managed in the application.
+
+[33mcommit e15beea9384c0f5fd5eddb9a35e5ac3a847f55b1[m
+Author: xusanov10 <ahmadjonxusanovv>
+Date:   Wed Oct 1 18:58:32 2025 +0500
+
+    Refactor response handling with ResultDTO implementation
+    
+    This commit refactors various controllers and services to return a `ResultDTO` object instead of simple strings. This change enhances response structure by including status codes and messages, improving consistency in handling responses.
+    
+    Key changes include:
+    - Updated methods in `AuthController`, `RoleController`, and `UserController` to accept DTOs directly and simplify return statements.
+    - Changed return types in `AuthService`, `RoleService`, and `UserService` from strings to `ResultDTO` objects for more informative responses.
+    - Modifie
