@@ -1,10 +1,10 @@
 ﻿using Library_Managment_System.DTOModels;
+using Microsoft.EntityFrameworkCore;
 using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
-using Libray_Managment_System.Services;
 using Libray_Managment_System.Services.Borrow;
-using Microsoft.EntityFrameworkCore;
+using Libray_Managment_System.Services;
 
 namespace Library_Managment_System.Services.Borrow
 {
@@ -17,20 +17,13 @@ namespace Library_Managment_System.Services.Borrow
             _context = context;
         }
 
-
-        public async Task<Result<BorrowResponseDTO>> BorrowBookAsync(BorrowDTO dto)
+        public async Task<BorrowResponseDTO> BorrowBookAsync(BorrowDTO dto)
         {
-            try
+            var copy = await _context.Bookcopies.FindAsync(dto.BookCopyId);
+            if (copy == null || copy.Status != BookCopyStatus.Available)
             {
-                var copy = await _context.Bookcopies.FindAsync(dto.BookCopyId);
-                if (copy == null || copy.Status != BookCopyStatus.Available)
-                {
-                    return new Result<BorrowResponseDTO>
-                    {
-                        StatusCode = 400,
-                        Message = "Book copy is not available or already borrowed"
-                    };
-                }
+                throw new Exception("Book copy is not available or already borrowed");
+            }
 
                 copy.Status = BookCopyStatus.Borrowed;
 
@@ -46,82 +39,42 @@ namespace Library_Managment_System.Services.Borrow
                 _context.Borrowrecords.Add(record);
                 await _context.SaveChangesAsync();
 
-                var response = new BorrowResponseDTO
-                {
-                    BorrowRecordId = record.Id,
-                    UserId = record.Userid,
-                    BookCopyId = record.Bookcopyid,
-                    BorrowDate = record.Borrowdate.Value,
-                    DueDate = record.Duedate,
-                    Status = record.Status
-                };
-
-                return new Result<BorrowResponseDTO>
-                {
-                    StatusCode = 200,
-                    Data = response
-                };
-            }
-            catch (Exception ex)
+            return new BorrowResponseDTO
             {
-                return new Result<BorrowResponseDTO>
-                {
-                    StatusCode = 500,
-                    Message = $"Error borrowing book: {ex.Message}"
-                };
-            }
+                BorrowRecordId = record.Id,
+                UserId = record.Userid,
+                BorrowDate = record.Borrowdate.Value,
+                DueDate = record.Duedate,
+                Status = record.Status
+            };
         }
 
-        public async Task<Result<bool>> ReturnBookAsync(int borrowId)
+        public async Task<bool> ReturnBookAsync(int borrowId)
         {
-            try
+            var record = await _context.Borrowrecords.FindAsync(borrowId);
+            if (record == null || record.Status != BorrowStatus.Borrowed)
             {
-                var record = await _context.Borrowrecords.FindAsync(borrowId);
-                if (record == null || record.Status != BorrowStatus.Borrowed)
-                {
-                    return new Result<bool>
-                    {
-                        StatusCode = 400,
-                        Message = "Borrow record not found or already returned",
-                        Data = false
-                    };
-                }
+                throw new Exception("Borrow record not found or already returned");
+            }
 
                 record.Status = BorrowStatus.Returned;
                 record.Returndate = DateTime.UtcNow;
 
-                var copy = await _context.Bookcopies.FindAsync(record.Bookcopyid);
-                if (copy == null)
-                {
-                    return new Result<bool>
-                    {
-                        StatusCode = 400,
-                        Message = "Book copy not found",
-                        Data = false
-                    };
-                }
+            var copy = await _context.Bookcopies.FindAsync(record.Bookcopyid);
 
-                copy.Status = BookCopyStatus.Available;
-
-                await _context.SaveChangesAsync();
-                return new Result<bool>
-                {
-                    StatusCode = 200,
-                    Data = true
-                };
-            }
-            catch (Exception ex)
+            if (copy != null)
             {
-                return new Result<bool>
-                {
-                    StatusCode = 500,
-                    Message = $"Error returning book: {ex.Message}",
-                    Data = false
-                };
+                copy.Status = BookCopyStatus.Available;
             }
+
+
+
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task<Result<List<BorrowResponseDTO>>> GetUserBorrowsAsync(int userId)
+        public async Task<List<BorrowResponseDTO>> GetUserBorrowsAsync(int userId)
         {
             try
             {
@@ -138,24 +91,14 @@ namespace Library_Managment_System.Services.Borrow
                     DueDate = r.Duedate,
                     Status = r.Status
                 }).ToList();
-
-                return new Result<List<BorrowResponseDTO>>
-                {
-                    StatusCode = 200,
-                    Data = response
-                };
             }
             catch (Exception ex)
             {
-                return new Result<List<BorrowResponseDTO>>
-                {
-                    StatusCode = 500,
-                    Message = $"Error fetching user borrows: {ex.Message}"
-                };
+                throw new Exception("Error fetching user borrows: " + ex.Message);
             }
         }
 
-        public async Task<Result<List<BorrowResponseDTO>>> GetOverdueBorrowsAsync()
+        public async Task<List<BorrowResponseDTO>> GetOverdueBorrowsAsync()
         {
             try
             {
@@ -172,20 +115,10 @@ namespace Library_Managment_System.Services.Borrow
                     DueDate = r.Duedate,
                     Status = r.Status
                 }).ToList();
-
-                return new Result<List<BorrowResponseDTO>>
-                {
-                    StatusCode = 200,
-                    Data = response
-                };
             }
             catch (Exception ex)
             {
-                return new Result<List<BorrowResponseDTO>>
-                {
-                    StatusCode = 500,
-                    Message = $"Error fetching overdue borrows: {ex.Message}"
-                };
+                throw new Exception("Overdue borrow records olishda xatolik: " + ex.Message);
             }
         }
     }
