@@ -1,11 +1,12 @@
-﻿using Library_Managment_System1;
-using Library_Managment_System.DTOModels;
+﻿using Library_Managment_System.DTOModels;
+using Microsoft.EntityFrameworkCore;
 using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
-using Microsoft.EntityFrameworkCore;
+using Libray_Managment_System.Services.Borrow;
+using Libray_Managment_System.Services;
 
-namespace Libray_Managment_System.Services.Borrow
+namespace Library_Managment_System.Services.Borrow
 {
     public class BorrowService : IBorrowService
     {
@@ -24,19 +25,19 @@ namespace Libray_Managment_System.Services.Borrow
                 throw new Exception("Book copy is not available or already borrowed");
             }
 
-            copy.Status = BookCopyStatus.Borrowed;
+                copy.Status = BookCopyStatus.Borrowed;
 
-            var record = new Borrowrecord
-            {
-                Userid = dto.UserId,
-                Bookcopyid = dto.BookCopyId,
-                Borrowdate = DateTime.UtcNow,
-                Duedate = DateTime.UtcNow.AddDays(14),
-                Status = BorrowStatus.Borrowed
-            };
+                var record = new Borrowrecord
+                {
+                    Userid = dto.UserId,
+                    Bookcopyid = dto.BookCopyId,
+                    Borrowdate = DateTime.UtcNow,
+                    Duedate = DateTime.UtcNow.AddDays(14),
+                    Status = BorrowStatus.Borrowed
+                };
 
-            _context.Borrowrecords.Add(record);
-            await _context.SaveChangesAsync();
+                _context.Borrowrecords.Add(record);
+                await _context.SaveChangesAsync();
 
             return new BorrowResponseDTO
             {
@@ -56,8 +57,8 @@ namespace Libray_Managment_System.Services.Borrow
                 throw new Exception("Borrow record not found or already returned");
             }
 
-            record.Status = BorrowStatus.Returned;
-            record.Returndate = DateTime.UtcNow;
+                record.Status = BorrowStatus.Returned;
+                record.Returndate = DateTime.UtcNow;
 
             var copy = await _context.Bookcopies.FindAsync(record.Bookcopyid);
 
@@ -77,8 +78,11 @@ namespace Libray_Managment_System.Services.Borrow
         {
             try
             {
-                var records = await _context.Borrowrecords.Where(b => b.Userid == userId).ToListAsync();
-                return records.Select(r => new BorrowResponseDTO
+                var records = await _context.Borrowrecords
+                    .Where(b => b.Userid == userId)
+                    .ToListAsync();
+
+                var response = records.Select(r => new BorrowResponseDTO
                 {
                     BorrowRecordId = r.Id,
                     UserId = r.Userid,
@@ -101,7 +105,8 @@ namespace Libray_Managment_System.Services.Borrow
                 var records = await _context.Borrowrecords
                     .Where(b => b.Status == BorrowStatus.Borrowed && b.Duedate < DateTime.UtcNow)
                     .ToListAsync();
-                return records.Select(r => new BorrowResponseDTO
+
+                var response = records.Select(r => new BorrowResponseDTO
                 {
                     BorrowRecordId = r.Id,
                     UserId = r.Userid,
