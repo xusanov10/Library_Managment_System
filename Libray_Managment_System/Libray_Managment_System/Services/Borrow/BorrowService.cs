@@ -1,13 +1,12 @@
-﻿using Library_Managment_System1;
-using Library_Managment_System.DTOModels;
+﻿using Library_Managment_System.DTOModels;
+using Microsoft.EntityFrameworkCore;
 using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
 using Libray_Managment_System.Services.Borrow;
 using Libray_Managment_System.Services;
-using Microsoft.EntityFrameworkCore;
 
-public class BorrowService : IBorrowService
+namespace Library_Managment_System.Services.Borrow
 {
     private readonly LibraryManagmentSystemContext _context;
 
@@ -40,16 +39,19 @@ public class BorrowService : IBorrowService
             return result;
         }
 
-        copy.Status = BookCopyStatus.Borrowed;
+                copy.Status = BookCopyStatus.Borrowed;
 
-        var record = new Borrowrecord
-        {
-            Userid = dto.UserId,
-            Bookcopyid = dto.BookCopyId,
-            Borrowdate = DateTime.UtcNow,
-            Duedate = dto.Duedate,
-            Status = BorrowStatus.Borrowed
-        };
+                var record = new Borrowrecord
+                {
+                    Userid = dto.UserId,
+                    Bookcopyid = dto.BookCopyId,
+                    Borrowdate = DateTime.UtcNow,
+                    Duedate = DateTime.UtcNow.AddDays(14),
+                    Status = BorrowStatus.Borrowed
+                };
+
+                _context.Borrowrecords.Add(record);
+                await _context.SaveChangesAsync();
 
         _context.Borrowrecords.Add(record);
         await _context.SaveChangesAsync();
@@ -92,8 +94,8 @@ public class BorrowService : IBorrowService
             return result;
         }
 
-        record.Status = BorrowStatus.Returned;
-        record.Returndate = DateTime.UtcNow;
+                record.Status = BorrowStatus.Returned;
+                record.Returndate = DateTime.UtcNow;
 
             var copy = await _context.Bookcopies.FindAsync(record.Bookcopyid);
 
@@ -113,16 +115,23 @@ public class BorrowService : IBorrowService
     {
         var result = new Result<List<BorrowResponseDTO>>()
         {
-            Message = "Success",
-            StatusCode = 200
-        };
-        try
-        {
-            var records = await _context.Borrowrecords
-                .Where(b => b.Userid == userId)
-                .ToListAsync();
+            try
+            {
+                var records = await _context.Borrowrecords
+                    .Where(b => b.Userid == userId)
+                    .ToListAsync();
 
-            result.Data =  records.Select(r => new BorrowResponseDTO
+                var response = records.Select(r => new BorrowResponseDTO
+                {
+                    BorrowRecordId = r.Id,
+                    UserId = r.Userid,
+                    BookCopyId = r.Bookcopyid,
+                    BorrowDate = r.Borrowdate.Value,
+                    DueDate = r.Duedate,
+                    Status = r.Status
+                }).ToList();
+            }
+            catch (Exception ex)
             {
                 BorrowRecordId = r.Id,
                 UserId = r.Userid,
@@ -147,16 +156,23 @@ public class BorrowService : IBorrowService
     {
         var result = new Result<List<BorrowResponseDTO>>()
         {
-            Message = "Success",
-            StatusCode = 200
-        };
-        try
-        {
-            var records = await _context.Borrowrecords
-                .Where(b => b.Status == BorrowStatus.Borrowed && b.Duedate < DateTime.UtcNow)
-                .ToListAsync();
+            try
+            {
+                var records = await _context.Borrowrecords
+                    .Where(b => b.Status == BorrowStatus.Borrowed && b.Duedate < DateTime.UtcNow)
+                    .ToListAsync();
 
-            result.Data= records.Select(r => new BorrowResponseDTO
+                var response = records.Select(r => new BorrowResponseDTO
+                {
+                    BorrowRecordId = r.Id,
+                    UserId = r.Userid,
+                    BookCopyId = r.Bookcopyid,
+                    BorrowDate = r.Borrowdate.Value,
+                    DueDate = r.Duedate,
+                    Status = r.Status
+                }).ToList();
+            }
+            catch (Exception ex)
             {
                 BorrowRecordId = r.Id,
                 UserId = r.Userid,
