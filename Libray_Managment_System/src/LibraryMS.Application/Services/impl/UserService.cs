@@ -1,10 +1,10 @@
-﻿using Library_Management_System.Services;
-using Library_Managment_System;
-using Libray_Managment_System.DtoModels;
-using Libray_Managment_System.DTOModels;
+﻿using Library_Managment_System1;
+using LibraryMS.Application.Models.Role;
+using LibraryMS.Application.Models.User;
+using LibraryMS.Application.Models.User.userProfil;
+using LibraryMS.Application.Services;
 using Libray_Managment_System.Models;
 using Libray_Managment_System.Services;
-using Libray_Managment_System.Services.Users;
 using Microsoft.EntityFrameworkCore;
 
 public class UserService : IUserService
@@ -40,7 +40,7 @@ public class UserService : IUserService
 
         string? profilePictureUrl = null;
 
-        // 📸 Agar rasm yuborilgan bo‘lsa — MinIO ga yuklash
+        //Agar rasm yuborilgan bo‘lsa — MinIO ga yuklash
         if (dto.ProfilePicture != null)
         {
             var bucketName = "user-profile-pictures";
@@ -55,7 +55,7 @@ public class UserService : IUserService
                 dto.ProfilePicture.ContentType
             );
 
-            // ❌ IsSuccess o‘rniga StatusCode tekshiramiz
+            //IsSuccess o‘rniga StatusCode tekshiramiz
             if (uploadResult.StatusCode != 200 && uploadResult.StatusCode != 201)
             {
                 return new Result
@@ -69,7 +69,7 @@ public class UserService : IUserService
             profilePictureUrl = uploadResult.Data;
         }
 
-        // ✅ Profil yaratish
+        //Profil yaratish
         var profile = new Userprofile
         {
             Id = dto.UserId,

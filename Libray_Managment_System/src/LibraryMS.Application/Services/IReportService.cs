@@ -1,4 +1,4 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using LibraryMS.Application.Models.Report;
 using Libray_Managment_System.Enum;
 
 namespace LibraryMS.Application.Services;

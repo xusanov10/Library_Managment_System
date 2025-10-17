@@ -1,12 +1,11 @@
 ﻿using Library_Managment_System1;
-using Library_Managment_System.DTOModels;
-using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
 using Libray_Managment_System.Services.Borrow;
 using Libray_Managment_System.Services;
 using Microsoft.EntityFrameworkCore;
 using LibraryMS.Application.Services;
+using LibraryMS.Application.Models.Borrow;
 
 public class BorrowService : IBorrowService
 {

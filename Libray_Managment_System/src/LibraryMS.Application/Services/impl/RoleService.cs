@@ -1,5 +1,8 @@
 ﻿using Library_Managment_System;
-using Libray_Managment_System.DtoModels;
+using Library_Managment_System1;
+using LibraryMS.Application.Models.Role;
+using LibraryMS.Application.Models.Role.Permisson;
+using LibraryMS.Application.Services;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,4 @@
-﻿using Library_Managment_System.DTOModels;
+﻿using LibraryMS.Application.Models.Fine;
 
 namespace LibraryMS.Application.Services
 {

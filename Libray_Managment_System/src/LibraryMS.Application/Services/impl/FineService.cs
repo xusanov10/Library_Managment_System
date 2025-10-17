@@ -1,5 +1,5 @@
 ﻿using Library_Managment_System;
-using Library_Managment_System.DTOModels;
+using LibraryMS.Application.Models.Fine;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library_Managment_System.Services.FineSer

@@ -1,5 +1,6 @@
-﻿using Libray_Managment_System.DtoModels;
-using Libray_Managment_System.DTOModels;
+﻿using LibraryMS.Application.Models.Role;
+using LibraryMS.Application.Models.User;
+using LibraryMS.Application.Models.User.userProfil;
 using Libray_Managment_System.Services;
 
 namespace LibraryMS.Application.Services

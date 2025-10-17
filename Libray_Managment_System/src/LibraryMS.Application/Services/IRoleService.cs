@@ -1,4 +1,5 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using LibraryMS.Application.Models.Role;
+using LibraryMS.Application.Models.Role.Permisson;
 using Libray_Managment_System.Services;
 
 namespace LibraryMS.Application.Services
