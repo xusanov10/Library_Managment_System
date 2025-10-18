@@ -5,6 +5,8 @@ namespace Libray_Managment_System.Models;
 
 public partial class User
 {
+    internal string Username;
+
     public int Id { get; set; }
 
     public string Fullname { get; set; } = null!;

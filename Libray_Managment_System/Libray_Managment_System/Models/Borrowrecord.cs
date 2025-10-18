@@ -1,6 +1,4 @@
 ﻿using Libray_Managment_System.Enum;
-using System;
-using System.Collections.Generic;
 
 namespace Libray_Managment_System.Models;
 
