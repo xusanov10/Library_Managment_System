@@ -1,10 +1,11 @@
-﻿using Library_Management_System.Services;
-using Library_Managment_System;
-using Libray_Managment_System.DtoModels;
-using Libray_Managment_System.DTOModels;
+﻿using Library_Managment_System1;
+using LibraryMS.Application.Models;
+using LibraryMS.Application.Models.Role;
+using LibraryMS.Application.Models.User;
+using LibraryMS.Application.Models.User.userProfil;
+using LibraryMS.Application.Services;
 using Libray_Managment_System.Models;
 using Libray_Managment_System.Services;
-using Libray_Managment_System.Services.Users;
 using Microsoft.EntityFrameworkCore;
 
 public class UserService : IUserService
@@ -40,7 +41,7 @@ public class UserService : IUserService
 
         string? profilePictureUrl = null;
 
-        // 📸 Agar rasm yuborilgan bo‘lsa — MinIO ga yuklash
+        //Agar rasm yuborilgan bo‘lsa — MinIO ga yuklash
         if (dto.ProfilePicture != null)
         {
             var bucketName = "user-profile-pictures";
@@ -55,7 +56,7 @@ public class UserService : IUserService
                 dto.ProfilePicture.ContentType
             );
 
-            // ❌ IsSuccess o‘rniga StatusCode tekshiramiz
+            //IsSuccess o‘rniga StatusCode tekshiramiz
             if (uploadResult.StatusCode != 200 && uploadResult.StatusCode != 201)
             {
                 return new Result
@@ -69,7 +70,7 @@ public class UserService : IUserService
             profilePictureUrl = uploadResult.Data;
         }
 
-        // ✅ Profil yaratish
+        //Profil yaratish
         var profile = new Userprofile
         {
             Id = dto.UserId,
@@ -92,10 +93,12 @@ public class UserService : IUserService
 
 
     // Barcha foydalanuvchilarni olish
-    public async Task<Result<IEnumerable<UserDTO>>> GetAllUsersAsync()
+    public async Task<Result<PaginationResult<UserListResponseDTO>>> GetAllUsersAsync(PageOptions userPageDTO)
     {
         var result = await _context.Users
-            .Select(u => new UserDTO
+            .Skip(userPageDTO.PageSize *(userPageDTO.PageNumber - 1))
+            .Take(userPageDTO.PageSize)
+            .Select(u => new UserListResponseDTO
             {
                 Id = u.Id,
                 Fullname = u.Fullname,
@@ -103,23 +106,32 @@ public class UserService : IUserService
                 Status = u.Status
             })
             .ToListAsync();
-        return new Result<IEnumerable<UserDTO>>
+
+        int count = _context.Users.Count();
+
+        return new Result<PaginationResult<UserListResponseDTO>>
         {
-            Data = result,
+            Data = new PaginationResult<UserListResponseDTO>
+            {
+                Values = result,
+                PageNumber = userPageDTO.PageNumber,
+                PageSize = userPageDTO.PageSize,
+                TotalCount = count
+            },
             Message = "Users retrieved successfully!",
             StatusCode = 200,
         };
     }
 
     // Foydalanuvchini ID orqali olish
-    public async Task<Result<UserDTO?>> GetUserByIdAsync(int id)
+    public async Task<Result<UserResponseDTO?>> GetUserByIdAsync(int id)
     {
         var user = await _context.Users.FindAsync(id);
         if (user == null) return null;
 
-        return new Result<UserDTO?>
+        return new Result<UserResponseDTO?>
         {
-            Data = new UserDTO
+            Data = new UserResponseDTO
             {
                 Id = user.Id,
                 Fullname = user.Fullname,
@@ -228,11 +240,24 @@ public class UserService : IUserService
             StatusCode = 200,
         };
     }
-    public async Task<Result<IEnumerable<UserDTO>>> GetUsersByRoleAsync(string roleName)
+    public async Task<Result<IEnumerable<PaginationResult<UserResponseDTO>>>> GetUsersByRoleAsync(PageOptions pageOptions,string roleName)
     {
+        var role = await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
+        if (role == null)
+        {
+            throw new Exception("Role not found");
+        }
+
+        var userIds = await _context.Userroles
+            .Where(ur => ur.Roleid == role.Id)
+            .Select(ur => ur.Userid)
+            .ToListAsync();
+
         var users = await _context.Users
-            .Where(u => u.Userroles.Any(ur => ur.Role.Name == roleName))
-            .Select(u => new UserDTO
+            .Where(u => userIds.Contains(u.Id))
+            .Skip(pageOptions.PageSize * (pageOptions.PageNumber - 1))
+            .Take(pageOptions.PageSize)
+            .Select(u => new UserResponseDTO
             {
                 Id = u.Id,
                 Fullname = u.Fullname,
@@ -241,10 +266,21 @@ public class UserService : IUserService
             })
             .ToListAsync();
 
-        return new Result<IEnumerable<UserDTO>>
+        int count = users.Count;
+
+        return new Result<IEnumerable<PaginationResult<UserResponseDTO>>>
         {
-            Data = users,
-            Message = "Users with the specified role retrieved successfully!",
+            Data = new List<PaginationResult<UserResponseDTO>>
+            {
+                new PaginationResult<UserResponseDTO>
+                {
+                    Values = users,
+                    PageNumber = pageOptions.PageNumber,
+                    PageSize = pageOptions.PageSize,
+                    TotalCount = count
+                }
+            },
+            Message = "Users retrieved successfully!",
             StatusCode = 200,
         };
     }

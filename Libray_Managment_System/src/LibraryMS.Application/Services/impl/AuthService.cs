@@ -1,20 +1,19 @@
-﻿using Library_Managment_System;
-using Libray_Managment_System.DtoModels;
-using Libray_Managment_System.DTOModels;
+﻿using Library_Management_System.Services;
+using Library_Managment_System1;
+using LibraryMS.Application.Models.Auth;
+using LibraryMS.Application.Services;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Libray_Managment_System.Services.Auth
 {
     public class AuthService : IAuthService
     {
         private readonly LibraryManagmentSystemContext _context;
-        private readonly ITokenService _tokenService;
-
-        public AuthService(LibraryManagmentSystemContext context, ITokenService tokenService)
+        public AuthService(LibraryManagmentSystemContext context)
         {
             _context = context;
-            _tokenService = tokenService;
         }
 
         public async Task<Result> RegisterUserAsync(RegisterDTO dto)
@@ -65,12 +64,12 @@ namespace Libray_Managment_System.Services.Auth
                     Data = "error"
 
                 };
-            var token = _tokenService.GenerateToken(user);
+            var token = JwtHelper.GenerateJwtToken(user, _context);
             return new Result<string>
             {
                 Message = "Login successful!",
                 StatusCode = 200,
-                Data = await token
+                Data = token
             };
         }
     }

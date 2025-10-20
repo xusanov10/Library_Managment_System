@@ -1,4 +1,5 @@
-﻿using Libray_Managment_System.Models;
+﻿using LibraryMS.Core.Entities;
+using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library_Managment_System1;
@@ -43,6 +44,8 @@ public class LibraryManagmentSystemContext : DbContext
     public virtual DbSet<Userprofile> Userprofiles { get; set; }
 
     public virtual DbSet<Userrole> Userroles { get; set; }
+
+    public virtual DbSet<Order> Orders { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

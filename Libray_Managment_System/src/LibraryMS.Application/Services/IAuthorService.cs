@@ -1,4 +1,4 @@
-﻿using Libray_Managment_System.DtoModels;
+﻿using LibraryMS.Application.Models.Author;
 
 namespace LibraryMS.Application.Services;
 

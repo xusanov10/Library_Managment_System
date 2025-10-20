@@ -1,5 +1,4 @@
-﻿using Library_Managment_System.DTOModels;
-using Libray_Managment_System.DtoModels;
+﻿using LibraryMS.Application.Models.Borrow;
 
 namespace LibraryMS.Application.Services
 {

@@ -1,5 +1,9 @@
 ﻿using Library_Managment_System;
-using Libray_Managment_System.DtoModels;
+using Library_Managment_System1;
+using LibraryMS.Application.Models;
+using LibraryMS.Application.Models.Role;
+using LibraryMS.Application.Models.Role.Permisson;
+using LibraryMS.Application.Services;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +18,7 @@ namespace Libray_Managment_System.Services.Role
             _context = context;
         }
 
-        public async Task<Result> CreateRoleAsync(RoleDTO dto)
+        public async Task<Result> CreateRoleAsync(RoleResponseDTO dto)
         {
             var exists = await _context.Roles.AnyAsync(r => r.Name == dto.Name);
             if (exists)
@@ -40,10 +44,12 @@ namespace Libray_Managment_System.Services.Role
             };
         }
 
-        public async Task<Result<IEnumerable<RoleDTO>>> GetAllRolesAsync()
+        public async Task<Result<PaginationResult<RoleResponseDTO>>> GetAllRolesAsync(PageOptions rolePageDTO)
         {
             var role = await _context.Roles
-                .Select(r => new RoleDTO
+                .Skip(rolePageDTO.PageSize * (rolePageDTO.PageNumber - 1))
+                .Take(rolePageDTO.PageSize)
+                .Select(r => new RoleResponseDTO
                 {
                     Id = r.Id,
                     Name = r.Name,
@@ -51,27 +57,35 @@ namespace Libray_Managment_System.Services.Role
                 })
                 .ToListAsync();
 
-            return new Result<IEnumerable<RoleDTO>>
+            int count = await _context.Roles.CountAsync();
+
+            return new Result<PaginationResult<RoleResponseDTO>>
             {
-                Data = role,
+                Data = new PaginationResult<RoleResponseDTO>
+                {
+                    Values = role,
+                    PageNumber = rolePageDTO.PageNumber,
+                    PageSize = rolePageDTO.PageSize,
+                    TotalCount = count
+                },
                 Message = "Roles retrieved successfully!",
                 StatusCode = 200,
             };
         }
 
-        public async Task<Result<RoleDTO>> GetRoleByIdAsync(int id)
+        public async Task<Result<RoleResponseDTO>> GetRoleByIdAsync(int id)
         {
             var role = await _context.Roles.FindAsync(id);
             if (role == null) 
-               return new Result<RoleDTO>
+               return new Result<RoleResponseDTO>
                {
                    Message = "Role not found!",
                    StatusCode = 404,
                };
 
-            return new Result<RoleDTO>
+            return new Result<RoleResponseDTO>
             {
-                Data = new RoleDTO
+                Data = new RoleResponseDTO
                 {
                     Id = role.Id,
                     Name = role.Name,

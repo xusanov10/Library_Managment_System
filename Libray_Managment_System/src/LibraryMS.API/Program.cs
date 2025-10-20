@@ -26,6 +26,14 @@ internal class Program
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IFileStorageService, MinioFileStorageService>();
 
+
+
+
+
+
+
+        // RabbirMq Singltin
+        // RabbitMQ addhostService<RabbitMQConsumer>();
         builder.Services.AddCors(options =>
         {
             // "CorsPolicy" nomli yangi policy yaratamiz

@@ -1,4 +1,4 @@
-﻿using Library_Managment_System1;
+﻿using Library_Managment_System;
 using Library_Managment_System.DTOModels;
 using Libray_Managment_System.DtoModels;
 using Libray_Managment_System.Enum;
@@ -106,8 +106,13 @@ public class BorrowService : IBorrowService
 
 
             await _context.SaveChangesAsync();
-            return true;
-        }
+        return new Result<bool>
+        {
+            Data = true,
+            Message = "saccses",
+            StatusCode = 200
+        };
+    }
 
     public async Task<Result<List<BorrowResponseDTO>>> GetUserBorrowsAsync(int userId)
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Libray_Managment_System.Models;
 
@@ -32,4 +33,5 @@ public partial class User
     public virtual Userprofile? Userprofile { get; set; }
 
     public virtual ICollection<Userrole> Userroles { get; set; } = new List<Userrole>();
+    public ClaimsIdentity? UserName { get; set; }
 }

@@ -1,17 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Libray_Managment_System.DtoModels;
+﻿using Library_Managment_System1;
+using LibraryMS.Application.Models.book;
+using LibraryMS.Application.Models.Filter;
+using LibraryMS.Application.Services;
 using Libray_Managment_System.Models;
-using Libray_Managment_System.Services.Book;
+using Microsoft.EntityFrameworkCore;
 
 public class BookService : IBookService
 {
-    private readonly IBookRepository _bookRepository;
-
-    public BookService(IBookRepository bookRepository)
+    private readonly LibraryManagmentSystemContext _context;
+    public BookService(LibraryManagmentSystemContext context)
     {
-        _bookRepository = bookRepository;
+        _context = context;
     }
 
     // Kitob qo‘shish
@@ -24,23 +23,34 @@ public class BookService : IBookService
             Authorid = dto.AuthorId,
             Categoryid = dto.CategoryId
         };
-
-        await _bookRepository.AddAsync(entity);
+        await _context.Books.AddAsync(entity);
+        await _context.SaveChangesAsync();
     }
 
     // Kitoblarni filter bilan olish
     public async Task<IEnumerable<BookDTO>> GetBooksAsync(FilterDTO filter)
-    {
-        var books = await _bookRepository.GetFilteredAsync(filter);
-
-        return books.Select(b => new BookDTO
+    { 
+        var query = _context.Books.AsQueryable();
+        if (!string.IsNullOrEmpty(filter.Title))
+        {
+            query = query.Where(b => b.Title.Contains(filter.Title));
+        }
+        if (filter.AuthorId.HasValue)
+        {
+            query = query.Where(b => b.Authorid == filter.AuthorId.Value);
+        }
+        if (filter.CategoryId.HasValue)
+        {
+            query = query.Where(b => b.Categoryid == filter.CategoryId.Value);
+        }
+        var books = await query.Select(b => new BookDTO
         {
             Id = b.Id,
             Title = b.Title,
             ISBN = b.Isbn,
             AuthorId = b.Authorid,
             CategoryId = b.Categoryid
-        });
-
+        }).ToListAsync();
+        return books;
     }
 }
