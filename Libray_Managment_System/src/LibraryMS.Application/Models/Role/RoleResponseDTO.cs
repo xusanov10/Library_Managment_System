@@ -1,6 +1,6 @@
 ﻿namespace LibraryMS.Application.Models.Role
 {
-    public class RoleDTO
+    public class RoleResponseDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

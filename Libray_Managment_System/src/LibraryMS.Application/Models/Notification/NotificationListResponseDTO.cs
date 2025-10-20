@@ -1,6 +1,6 @@
 ﻿namespace LibraryMS.Application.Models.Notification
 {
-    public class NotificationDTO
+    public class NotificationListResponseDTO
     {
         public int Id { get; set; }    
         public int UserId { get; set; }

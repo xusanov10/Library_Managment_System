@@ -28,6 +28,12 @@ internal class Program
 
 
 
+
+
+
+
+        // RabbirMq Singltin
+        // RabbitMQ addhostService<RabbitMQConsumer>();
         builder.Services.AddCors(options =>
         {
             // "CorsPolicy" nomli yangi policy yaratamiz

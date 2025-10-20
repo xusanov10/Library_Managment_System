@@ -1,6 +1,12 @@
-﻿namespace LibraryMS.Application.Models.User
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace LibraryMS.Application.Models.User
 {
-    public class UserDTO
+    public class UserListResponseDTO
     {
         public int Id { get; set; }
 
