@@ -1,8 +1,8 @@
 ﻿using Libray_Managment_System.Enum;
 using Libray_Managment_System.Models;
-using Library_Managment_System;
+using Library_Managment_System1;
 
-namespace Libray_Managment_System.Data
+namespace LibraryMS.Application.Seeders
 {
     public class PermissionSeeder
     {

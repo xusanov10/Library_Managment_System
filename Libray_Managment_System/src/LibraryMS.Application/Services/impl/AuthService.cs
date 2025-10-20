@@ -2,18 +2,22 @@
 using Library_Managment_System1;
 using LibraryMS.Application.Models.Auth;
 using LibraryMS.Application.Services;
+using LibraryMS.DataAccess.Authentication;
 using Libray_Managment_System.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Libray_Managment_System.Services.Auth
 {
     public class AuthService : IAuthService
     {
         private readonly LibraryManagmentSystemContext _context;
-        public AuthService(LibraryManagmentSystemContext context)
+        private readonly IJwtTokenService _jwtTokenService;
+        public AuthService(LibraryManagmentSystemContext context, IJwtTokenService jwtTokenService)
         {
             _context = context;
+            _jwtTokenService = jwtTokenService;
         }
 
         public async Task<Result> RegisterUserAsync(RegisterDTO dto)
@@ -55,20 +59,41 @@ namespace Libray_Managment_System.Services.Auth
 
         public async Task<Result<string>> LoginUserAsync(LoginDTO dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.Passwordhash))
+            // 1️⃣ Foydalanuvchini email orqali topamiz
+            var user = await _context.Users
+                .Include(u => u.Userroles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+            if (user == null)
+            {
                 return new Result<string>
                 {
-                    Message = "Invalid email or password!",
                     StatusCode = 401,
+                    Message = "User not found!",
                     Data = "error"
-
                 };
-            var token = JwtHelper.GenerateJwtToken(user, _context);
+            }
+
+            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Passwordhash);
+            if (!isPasswordValid)
+            {
+                return new Result<string>
+                {
+                    StatusCode = 401,
+                    Message = "Invalid password!",
+                    Data = "error"
+                };
+            }
+
+            var role = user.Userroles.FirstOrDefault()?.Role?.Name ?? "Student";
+
+            var token = _jwtTokenService.GenerateToken(user.Id.ToString(), role);
+
             return new Result<string>
             {
-                Message = "Login successful!",
                 StatusCode = 200,
+                Message = "Login successful!",
                 Data = token
             };
         }

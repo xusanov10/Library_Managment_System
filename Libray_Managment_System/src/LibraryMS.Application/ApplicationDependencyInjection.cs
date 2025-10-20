@@ -1,31 +1,36 @@
-﻿using LibraryMS.Application.Services;
+﻿using LibraryMS.Application.Seeders;
+using LibraryMS.Application.Services;
 using Libray_Managment_System.Services.Auth;
 using Libray_Managment_System.Services.Role;
 using Mapster;
-using MapsterMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-public static class ApplicationDependencyInjection
+namespace LibraryMS.Application
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static class ApplicationDependencyInjection
     {
-        services.AddServices();
-        services.RegisterMapper();
-        return services;
-    }
+        public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddServices();
+            services.RegisterMapper();
 
-    private static void AddServices(this IServiceCollection services)
-    {
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IRoleService, RoleService>();
-        services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IBookService, BookService>();
-        services.AddScoped<IBorrowService, BorrowService>();
-    }
+            return services;
+        }
 
-    private static void RegisterMapper(this IServiceCollection services)
-    {
-        services.AddMapster();
+        private static void AddServices(this IServiceCollection services)
+        {
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IRoleService, RoleService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IBookService, BookService>();
+            services.AddScoped<IBorrowService, BorrowService>();
+            services.AddScoped<PermissionSeeder>();
+        }
+
+        private static void RegisterMapper(this IServiceCollection services)
+        {
+            services.AddMapster();
+        }
     }
 }

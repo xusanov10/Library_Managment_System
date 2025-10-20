@@ -1,12 +1,8 @@
-﻿using Library_Management_System.Services;
-using Library_Managment_System;
-using Library_Managment_System.Services;
-using Libray_Managment_System.Data;
-using Libray_Managment_System.Services.Auth;
-using Libray_Managment_System.Services.Role;
-using Libray_Managment_System.Services.Users;
+﻿using Library_Managment_System.Services;
+using LibraryMS.Application;
+using LibraryMS.Application.Seeders;
+using LibraryMS.DataAccess.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -20,20 +16,14 @@ internal class Program
 
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddScoped<ITokenService, TokenService>();
-        builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IRoleService, RoleService>();
-        builder.Services.AddScoped<IAuthService, AuthService>();
-        builder.Services.AddScoped<IFileStorageService, MinioFileStorageService>();
-
-
-
-
+        builder.Services.AddApplication(builder.Configuration);
+        builder.Services.AddInfrastructure(builder.Configuration);
 
 
 
         // RabbirMq Singltin
         // RabbitMQ addhostService<RabbitMQConsumer>();
+
         builder.Services.AddCors(options =>
         {
             // "CorsPolicy" nomli yangi policy yaratamiz
@@ -74,10 +64,6 @@ internal class Program
             });
         });
 
-        //JWT Config
-        var jwtConfig = builder.Configuration.GetSection("Jwt");
-        var key = Encoding.UTF8.GetBytes(jwtConfig["Key"]);
-
         //Add Controllers
         builder.Services.AddControllers();
 
@@ -108,32 +94,35 @@ internal class Program
             });
         });
 
-        // Authentication & Authorization
-        builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
+        var jwtSettings = new JwtSettings();
+        builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
+
+        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+
+        var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
+
+        builder.Services
+            .AddAuthentication(options =>
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtConfig["Issuer"],
-                ValidAudience = jwtConfig["Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(key)
-            };
-        });
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+            });
 
         builder.Services.AddAuthorization();
         builder.Services.Configure<MinioSettings>(builder.Configuration.GetSection("MinioSettings"));
-
-        // Npgsql (DbContext)
-        builder.Services.AddDbContext<LibraryManagmentSystemContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         builder.Services.AddSingleton<IMinioClient>(sp =>
         {
@@ -153,10 +142,6 @@ internal class Program
             return client.Build(); // MinioClient ni qurish
         });
 
-        // Custom Services (DI)
-        builder.Services.AddScoped<TokenService>();
-        builder.Services.AddScoped<IUserService, UserService>();
-
         var app = builder.Build();
 
         // Middleware
@@ -175,20 +160,11 @@ internal class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+
         using (var scope = app.Services.CreateScope())
         {
-            var services = scope.ServiceProvider;
-            try
-            {
-                var context = services.GetRequiredService<LibraryManagmentSystemContext>();
-                var seeder = new PermissionSeeder(context);
-                seeder.SeedPermissionsAsync();
-            }
-            catch (Exception ex)
-            {
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "An error occurred seeding the DB.");
-            }
+            var seeder = scope.ServiceProvider.GetRequiredService<PermissionSeeder>();
+            seeder.SeedPermissionsAsync();
         }
         app.MapControllers();
 
