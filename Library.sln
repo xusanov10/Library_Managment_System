@@ -1,19 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11111.16 d18.0
+VisualStudioVersion = 18.0.11111.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryMS.Application", "src\LibraryMS.Application\LibraryMS.Application.csproj", "{D48CD836-87F4-C548-9FB6-E89208B1E254}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Application", "src\LibraryMS.Application\Library.Application.csproj", "{D48CD836-87F4-C548-9FB6-E89208B1E254}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryMS.Core", "src\LibraryMS.Core\LibraryMS.Core.csproj", "{1B3E7BD2-A4BA-8FEA-50D0-64E361B88B9D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Core", "src\LibraryMS.Core\Library.Core.csproj", "{1B3E7BD2-A4BA-8FEA-50D0-64E361B88B9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryMS.DataAccess", "src\LibraryMS.DataAccess\LibraryMS.DataAccess.csproj", "{DE5A21FD-9D68-249A-6D65-A9A821B0FA05}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.DataAccess", "src\LibraryMS.DataAccess\Library.DataAccess.csproj", "{DE5A21FD-9D68-249A-6D65-A9A821B0FA05}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryMS.Shared", "src\LibraryMS.Shared\LibraryMS.Shared.csproj", "{B9BF5925-2017-8C87-4701-CD15B448AE48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibraryMS.Api", "src\LibraryMS.API\LibraryMS.Api.csproj", "{B4D4F1A3-46A2-0CB8-2055-652A6E871FA7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Api", "src\LibraryMS.API\Library.Api.csproj", "{B4D4F1A3-46A2-0CB8-2055-652A6E871FA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{93C8A66C-F3E5-4CC7-9312-956157BF0CDA}"
 EndProject

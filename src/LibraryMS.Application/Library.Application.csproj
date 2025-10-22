@@ -22,7 +22,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\LibraryMS.DataAccess\LibraryMS.DataAccess.csproj" />
+	  <ProjectReference Include="..\LibraryMS.DataAccess\Library.DataAccess.csproj" />
 	  <ProjectReference Include="..\LibraryMS.Shared\LibraryMS.Shared.csproj" />
 	</ItemGroup>
 
